@@ -5494,4 +5494,129 @@ class AppLocalizationsDe extends AppLocalizations {
   String chat_longMessageRetryNote(int count) {
     return 'Über 158 Byte: wird höchstens $count Mal gesendet';
   }
+
+  @override
+  String get reliableGroup_title => 'Gesicherte Gruppen';
+
+  @override
+  String get reliableGroup_empty => 'Noch keine gesicherten Gruppen';
+
+  @override
+  String get reliableGroup_emptyHint =>
+      'Jedes Mitglied bestätigt jede Nachricht, fehlende Nachrichten werden automatisch nachgeliefert.';
+
+  @override
+  String get reliableGroup_create => 'Gruppe erstellen';
+
+  @override
+  String get reliableGroup_joinPaste => 'Einladung einfügen';
+
+  @override
+  String get reliableGroup_joinScan => 'Einladungs-QR-Code scannen';
+
+  @override
+  String get reliableGroup_name => 'Gruppenname';
+
+  @override
+  String reliableGroup_selectedMembers(int count) {
+    return 'Mitglieder: du und $count weitere';
+  }
+
+  @override
+  String reliableGroup_tooManyMembers(int max) {
+    return 'Höchstens $max Mitglieder';
+  }
+
+  @override
+  String get reliableGroup_noContacts =>
+      'Noch keine Chat-Kontakte. Mitglieder müssen in deinen Kontakten sein.';
+
+  @override
+  String get reliableGroup_invite => 'Einladung';
+
+  @override
+  String get reliableGroup_inviteHint =>
+      'Jedes Mitglied scannt diesen Code oder fügt den Text ein. Er enthält den Gruppenschlüssel: Teile ihn nur mit den Mitgliedern.';
+
+  @override
+  String get reliableGroup_inviteCopied => 'Einladung kopiert';
+
+  @override
+  String get reliableGroup_invitePasteHint => 'Einladungstext einfügen';
+
+  @override
+  String get reliableGroup_invalidInvite =>
+      'Das ist keine gültige Gruppeneinladung';
+
+  @override
+  String get reliableGroup_notAMember =>
+      'Dieses Funkgerät ist kein Mitglied dieser Gruppe';
+
+  @override
+  String get reliableGroup_noFreeChannel =>
+      'Kein freier Kanalplatz auf dem Funkgerät';
+
+  @override
+  String reliableGroup_joined(String name) {
+    return '$name beigetreten';
+  }
+
+  @override
+  String get reliableGroup_unsupported =>
+      'Die Firmware des Funkgeräts ist zu alt für gesicherte Gruppen (ab v1.15)';
+
+  @override
+  String get reliableGroup_channelMissing =>
+      'Der Kanal der Gruppe fehlt auf diesem Funkgerät. Tritt mit der Einladung erneut bei.';
+
+  @override
+  String get reliableGroup_statusComplete => 'Vollständig: alle haben alles';
+
+  @override
+  String reliableGroup_statusMissing(int count) {
+    return '$count fehlen, werden nachgeladen';
+  }
+
+  @override
+  String reliableGroup_statusWaiting(String names) {
+    return 'Warte auf $names';
+  }
+
+  @override
+  String get reliableGroup_composeHint => 'Nachricht';
+
+  @override
+  String get reliableGroup_textTooLong => 'Nachricht zu lang';
+
+  @override
+  String get reliableGroup_storedBy => 'Gespeichert bei';
+
+  @override
+  String get reliableGroup_notConfirmedBy => 'Noch nicht bestätigt';
+
+  @override
+  String get reliableGroup_members => 'Mitglieder';
+
+  @override
+  String get reliableGroup_memberConfirmed => 'Hat alles';
+
+  @override
+  String get reliableGroup_memberNotConfirmed => 'Nicht bestätigt';
+
+  @override
+  String get reliableGroup_neverHeard => 'noch nie gehört';
+
+  @override
+  String get reliableGroup_you => 'Du';
+
+  @override
+  String get reliableGroup_leave => 'Gruppe verlassen';
+
+  @override
+  String reliableGroup_leaveConfirm(String name) {
+    return '$name und alle Nachrichten von diesem Handy entfernen?';
+  }
+
+  @override
+  String get reliableGroup_noMessages => 'Noch keine Nachrichten';
 }

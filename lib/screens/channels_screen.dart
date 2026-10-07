@@ -34,6 +34,7 @@ import 'channel_chat_screen.dart';
 import 'community_qr_scanner_screen.dart';
 import 'contacts_screen.dart';
 import 'map_screen.dart';
+import 'reliable_groups_screen.dart';
 import 'settings_screen.dart';
 
 class ChannelsScreen extends StatefulWidget {
@@ -145,6 +146,21 @@ class _ChannelsScreenState extends State<ChannelsScreen>
                     ],
                   ),
                   onTap: () => _showManageCommunitiesDialog(context),
+                ),
+                PopupMenuItem(
+                  child: Row(
+                    children: [
+                      const Icon(Icons.verified_user_outlined),
+                      const SizedBox(width: 8),
+                      Text(menuContext.l10n.reliableGroup_title),
+                    ],
+                  ),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ReliableGroupsScreen(),
+                    ),
+                  ),
                 ),
                 PopupMenuItem(
                   child: Row(

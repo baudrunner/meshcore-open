@@ -9297,6 +9297,216 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Over 158 bytes: sent at most {count} times'**
   String chat_longMessageRetryNote(int count);
+
+  /// No description provided for @reliableGroup_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Reliable groups'**
+  String get reliableGroup_title;
+
+  /// No description provided for @reliableGroup_empty.
+  ///
+  /// In en, this message translates to:
+  /// **'No reliable groups yet'**
+  String get reliableGroup_empty;
+
+  /// No description provided for @reliableGroup_emptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Every member confirms every message, and missing messages are resent automatically.'**
+  String get reliableGroup_emptyHint;
+
+  /// No description provided for @reliableGroup_create.
+  ///
+  /// In en, this message translates to:
+  /// **'Create group'**
+  String get reliableGroup_create;
+
+  /// No description provided for @reliableGroup_joinPaste.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste invite'**
+  String get reliableGroup_joinPaste;
+
+  /// No description provided for @reliableGroup_joinScan.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan invite QR code'**
+  String get reliableGroup_joinScan;
+
+  /// No description provided for @reliableGroup_name.
+  ///
+  /// In en, this message translates to:
+  /// **'Group name'**
+  String get reliableGroup_name;
+
+  /// No description provided for @reliableGroup_selectedMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'Members: you and {count} more'**
+  String reliableGroup_selectedMembers(int count);
+
+  /// No description provided for @reliableGroup_tooManyMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'At most {max} members'**
+  String reliableGroup_tooManyMembers(int max);
+
+  /// No description provided for @reliableGroup_noContacts.
+  ///
+  /// In en, this message translates to:
+  /// **'No chat contacts yet. Members must be in your contacts.'**
+  String get reliableGroup_noContacts;
+
+  /// No description provided for @reliableGroup_invite.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite'**
+  String get reliableGroup_invite;
+
+  /// No description provided for @reliableGroup_inviteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Every member scans this code or pastes the text. It contains the group key: share it only with the members.'**
+  String get reliableGroup_inviteHint;
+
+  /// No description provided for @reliableGroup_inviteCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite copied'**
+  String get reliableGroup_inviteCopied;
+
+  /// No description provided for @reliableGroup_invitePasteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste the invite text'**
+  String get reliableGroup_invitePasteHint;
+
+  /// No description provided for @reliableGroup_invalidInvite.
+  ///
+  /// In en, this message translates to:
+  /// **'This is not a valid group invite'**
+  String get reliableGroup_invalidInvite;
+
+  /// No description provided for @reliableGroup_notAMember.
+  ///
+  /// In en, this message translates to:
+  /// **'This radio is not a member of this group'**
+  String get reliableGroup_notAMember;
+
+  /// No description provided for @reliableGroup_noFreeChannel.
+  ///
+  /// In en, this message translates to:
+  /// **'No free channel slot on the radio'**
+  String get reliableGroup_noFreeChannel;
+
+  /// No description provided for @reliableGroup_joined.
+  ///
+  /// In en, this message translates to:
+  /// **'Joined {name}'**
+  String reliableGroup_joined(String name);
+
+  /// No description provided for @reliableGroup_unsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'The radio firmware is too old for reliable groups (v1.15 or later needed)'**
+  String get reliableGroup_unsupported;
+
+  /// No description provided for @reliableGroup_channelMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'The group\'s channel is missing on this radio. Join again with the invite.'**
+  String get reliableGroup_channelMissing;
+
+  /// No description provided for @reliableGroup_statusComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete: everyone has everything'**
+  String get reliableGroup_statusComplete;
+
+  /// No description provided for @reliableGroup_statusMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} missing, being fetched'**
+  String reliableGroup_statusMissing(int count);
+
+  /// No description provided for @reliableGroup_statusWaiting.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for {names}'**
+  String reliableGroup_statusWaiting(String names);
+
+  /// No description provided for @reliableGroup_composeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get reliableGroup_composeHint;
+
+  /// No description provided for @reliableGroup_textTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Message too long'**
+  String get reliableGroup_textTooLong;
+
+  /// No description provided for @reliableGroup_storedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Stored by'**
+  String get reliableGroup_storedBy;
+
+  /// No description provided for @reliableGroup_notConfirmedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Not confirmed yet'**
+  String get reliableGroup_notConfirmedBy;
+
+  /// No description provided for @reliableGroup_members.
+  ///
+  /// In en, this message translates to:
+  /// **'Members'**
+  String get reliableGroup_members;
+
+  /// No description provided for @reliableGroup_memberConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Has everything'**
+  String get reliableGroup_memberConfirmed;
+
+  /// No description provided for @reliableGroup_memberNotConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Not confirmed'**
+  String get reliableGroup_memberNotConfirmed;
+
+  /// No description provided for @reliableGroup_neverHeard.
+  ///
+  /// In en, this message translates to:
+  /// **'never heard'**
+  String get reliableGroup_neverHeard;
+
+  /// No description provided for @reliableGroup_you.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get reliableGroup_you;
+
+  /// No description provided for @reliableGroup_leave.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave group'**
+  String get reliableGroup_leave;
+
+  /// No description provided for @reliableGroup_leaveConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {name} and its messages from this phone?'**
+  String reliableGroup_leaveConfirm(String name);
+
+  /// No description provided for @reliableGroup_noMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'No messages yet'**
+  String get reliableGroup_noMessages;
 }
 
 class _AppLocalizationsDelegate

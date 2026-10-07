@@ -5473,4 +5473,128 @@ class AppLocalizationsHu extends AppLocalizations {
   String chat_longMessageRetryNote(int count) {
     return '158 bájt felett: legfeljebb $count alkalommal küldve';
   }
+
+  @override
+  String get reliableGroup_title => 'Reliable groups';
+
+  @override
+  String get reliableGroup_empty => 'No reliable groups yet';
+
+  @override
+  String get reliableGroup_emptyHint =>
+      'Every member confirms every message, and missing messages are resent automatically.';
+
+  @override
+  String get reliableGroup_create => 'Create group';
+
+  @override
+  String get reliableGroup_joinPaste => 'Paste invite';
+
+  @override
+  String get reliableGroup_joinScan => 'Scan invite QR code';
+
+  @override
+  String get reliableGroup_name => 'Group name';
+
+  @override
+  String reliableGroup_selectedMembers(int count) {
+    return 'Members: you and $count more';
+  }
+
+  @override
+  String reliableGroup_tooManyMembers(int max) {
+    return 'At most $max members';
+  }
+
+  @override
+  String get reliableGroup_noContacts =>
+      'No chat contacts yet. Members must be in your contacts.';
+
+  @override
+  String get reliableGroup_invite => 'Invite';
+
+  @override
+  String get reliableGroup_inviteHint =>
+      'Every member scans this code or pastes the text. It contains the group key: share it only with the members.';
+
+  @override
+  String get reliableGroup_inviteCopied => 'Invite copied';
+
+  @override
+  String get reliableGroup_invitePasteHint => 'Paste the invite text';
+
+  @override
+  String get reliableGroup_invalidInvite => 'This is not a valid group invite';
+
+  @override
+  String get reliableGroup_notAMember =>
+      'This radio is not a member of this group';
+
+  @override
+  String get reliableGroup_noFreeChannel => 'No free channel slot on the radio';
+
+  @override
+  String reliableGroup_joined(String name) {
+    return 'Joined $name';
+  }
+
+  @override
+  String get reliableGroup_unsupported =>
+      'The radio firmware is too old for reliable groups (v1.15 or later needed)';
+
+  @override
+  String get reliableGroup_channelMissing =>
+      'The group\'s channel is missing on this radio. Join again with the invite.';
+
+  @override
+  String get reliableGroup_statusComplete =>
+      'Complete: everyone has everything';
+
+  @override
+  String reliableGroup_statusMissing(int count) {
+    return '$count missing, being fetched';
+  }
+
+  @override
+  String reliableGroup_statusWaiting(String names) {
+    return 'Waiting for $names';
+  }
+
+  @override
+  String get reliableGroup_composeHint => 'Message';
+
+  @override
+  String get reliableGroup_textTooLong => 'Message too long';
+
+  @override
+  String get reliableGroup_storedBy => 'Stored by';
+
+  @override
+  String get reliableGroup_notConfirmedBy => 'Not confirmed yet';
+
+  @override
+  String get reliableGroup_members => 'Members';
+
+  @override
+  String get reliableGroup_memberConfirmed => 'Has everything';
+
+  @override
+  String get reliableGroup_memberNotConfirmed => 'Not confirmed';
+
+  @override
+  String get reliableGroup_neverHeard => 'never heard';
+
+  @override
+  String get reliableGroup_you => 'You';
+
+  @override
+  String get reliableGroup_leave => 'Leave group';
+
+  @override
+  String reliableGroup_leaveConfirm(String name) {
+    return 'Remove $name and its messages from this phone?';
+  }
+
+  @override
+  String get reliableGroup_noMessages => 'No messages yet';
 }
