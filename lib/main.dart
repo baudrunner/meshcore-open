@@ -13,6 +13,7 @@ import 'utils/platform_info.dart';
 import 'connector/meshcore_connector.dart';
 import 'models/image_codec_support.dart';
 import 'screens/scanner_screen.dart';
+import 'services/reliable_group_service.dart';
 import 'services/image_chunk_transport.dart';
 import 'services/image_codec_service.dart';
 import 'services/image_codec_settings_store.dart';
@@ -158,6 +159,8 @@ void main() async {
   await connector.loadChannelSettings();
   await connector.loadCachedChannels();
 
+  final reliableGroupService = ReliableGroupService(connector);
+
   // Load persisted channel messages
   await connector.loadAllChannelMessages();
   await connector.loadUnreadState();
@@ -179,6 +182,7 @@ void main() async {
       imageCodecService: imageCodecService,
       receivedImageStore: receivedImageStore,
       imageReassembler: imageReassembler,
+      reliableGroupService: reliableGroupService,
     ),
   );
 }
@@ -314,6 +318,7 @@ class MeshCoreApp extends StatefulWidget {
   final ImageCodecService imageCodecService;
   final ReceivedImageStore receivedImageStore;
   final ImageStreamReassembler imageReassembler;
+  final ReliableGroupService reliableGroupService;
 
   const MeshCoreApp({
     super.key,
@@ -332,6 +337,7 @@ class MeshCoreApp extends StatefulWidget {
     required this.imageCodecService,
     required this.receivedImageStore,
     required this.imageReassembler,
+    required this.reliableGroupService,
   });
 
   @override
@@ -406,6 +412,7 @@ class _MeshCoreAppState extends State<MeshCoreApp> with WidgetsBindingObserver {
         ChangeNotifierProvider.value(value: widget.timeoutPredictionService),
         ChangeNotifierProvider.value(value: widget.imageCodecService),
         ChangeNotifierProvider.value(value: widget.receivedImageStore),
+        ChangeNotifierProvider.value(value: widget.reliableGroupService),
       ],
       child: Consumer<AppSettingsService>(
         builder: (context, settingsService, child) {

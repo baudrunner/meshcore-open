@@ -34,6 +34,7 @@ import '../services/image_chunk_transport.dart'
         respCodeChannelDataRecv,
         senderPrefixFromKey;
 import '../services/image_codec_service.dart';
+import '../services/reliable_group_codec.dart' show dataTypeReliableGroup;
 import '../services/message_retry_service.dart';
 import '../services/path_history_service.dart';
 import '../services/app_settings_service.dart';
@@ -4231,6 +4232,32 @@ class MeshCoreConnector extends ChangeNotifier {
       }
     }, region: getEffectiveChannelRegion(channelIndex));
     return sentAll;
+  }
+
+  /// Sends one reliable group blob as a GRP_DATA flood on [channelIndex].
+  ///
+  /// Like image chunks, the command ACK only means the firmware queued the
+  /// packet; delivery is confirmed by the group protocol itself.
+  Future<bool> sendReliableGroupBlob(
+    Uint8List blob, {
+    required int channelIndex,
+  }) async {
+    if (!supportsChannelData) return false;
+    var sent = false;
+    await _runScopedChannelSend(() async {
+      if (!isConnected) return;
+      await _waitForRadioQuiet(lastInboundRxTime: _lastChannelMsgRxTime);
+      await _sendFrameAndWaitForCommandAck(
+        buildSendChannelDataFrame(
+          channelIndex: channelIndex,
+          dataType: dataTypeReliableGroup,
+          payload: blob,
+          pathLen: outPathUnknown,
+        ),
+      );
+      sent = true;
+    }, region: getEffectiveChannelRegion(channelIndex));
+    return sent;
   }
 
   Future<void> _runScopedChannelSend(
