@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -5,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../connector/meshcore_connector.dart';
 import '../helpers/snack_bar_builder.dart';
+import '../l10n/app_localizations.dart';
 import '../l10n/l10n.dart';
 import '../models/reliable_group.dart';
 import '../services/reliable_group_codec.dart';
@@ -82,9 +84,16 @@ class _ReliableGroupChatScreenState extends State<ReliableGroupChatScreen>
   bool _sending = false;
   MeshCoreConnector? _connector;
 
+  /// Messages turn "lost" by age alone, without any packet to rebuild on.
+  Timer? _ageTicker;
+
   @override
   void initState() {
     super.initState();
+    _ageTicker = Timer.periodic(
+      const Duration(minutes: 1),
+      (_) => setState(() {}),
+    );
     _text.addListener(() => setState(() {}));
     // While open, new group messages are read: no unread count, no
     // notification, and earlier ones are marked read.
@@ -102,6 +111,7 @@ class _ReliableGroupChatScreenState extends State<ReliableGroupChatScreen>
 
   @override
   void dispose() {
+    _ageTicker?.cancel();
     _connector?.setActiveChannel(null);
     _text.dispose();
     super.dispose();
@@ -335,13 +345,12 @@ class _MessageBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final own = message.author == engine.config.selfIndex;
-    final others = group.members.length - 1;
-    final acked = own ? engine.ackedBy(message.seq) : const <int>[];
     final time = TimeOfDay.fromDateTime(message.timestamp).format(context);
     return Align(
       alignment: own ? Alignment.centerRight : Alignment.centerLeft,
       child: GestureDetector(
-        onTap: own ? () => _showAcks(context, acked) : null,
+        onTap: own ? () => _showReceipts(context) : null,
+        onLongPress: own ? () => _showReceipts(context) : null,
         child: Container(
           constraints: BoxConstraints(
             maxWidth: MediaQuery.of(context).size.width * 0.8,
@@ -371,18 +380,11 @@ class _MessageBubble extends StatelessWidget {
                 children: [
                   Text(time, style: theme.textTheme.labelSmall),
                   if (own) ...[
-                    const SizedBox(width: 6),
-                    Icon(
-                      acked.length == others ? Icons.done_all : Icons.done,
-                      size: 14,
-                      color: acked.length == others
-                          ? MeshPalette.signal
-                          : theme.colorScheme.onSurfaceVariant,
-                    ),
-                    const SizedBox(width: 2),
-                    Text(
-                      '${acked.length}/$others',
-                      style: theme.textTheme.labelSmall,
+                    const SizedBox(width: 8),
+                    _DeliveryBadge(
+                      group: group,
+                      engine: engine,
+                      seq: message.seq,
                     ),
                   ],
                 ],
@@ -394,34 +396,121 @@ class _MessageBubble extends StatelessWidget {
     );
   }
 
-  void _showAcks(BuildContext context, List<int> acked) {
-    final l10n = context.l10n;
-    final pending = [
-      for (var p = 0; p < group.members.length; p++)
-        if (p != engine.config.selfIndex && !acked.contains(p)) p,
-    ];
+  void _showReceipts(BuildContext context) {
     showModalBottomSheet<void>(
       context: context,
-      builder: (_) => SafeArea(
-        child: ListView(
-          shrinkWrap: true,
-          children: [
-            ListTile(title: Text(l10n.reliableGroup_storedBy)),
-            for (final p in acked)
-              ListTile(
-                leading: const Icon(Icons.check, color: MeshPalette.signal),
-                title: Text(group.members[p].name),
-              ),
-            if (pending.isNotEmpty)
-              ListTile(title: Text(l10n.reliableGroup_notConfirmedBy)),
-            for (final p in pending)
-              ListTile(
-                leading: const Icon(Icons.schedule, color: MeshPalette.warn),
-                title: Text(group.members[p].name),
-              ),
-          ],
-        ),
+      builder: (_) => Consumer<ReliableGroupService>(
+        builder: (context, _, _) {
+          final l10n = context.l10n;
+          final delivery = engine.deliveryOf(message.seq, DateTime.now());
+          final acked = engine.ackedBy(message.seq);
+          final pending = [
+            for (var p = 0; p < group.members.length; p++)
+              if (p != engine.config.selfIndex && !acked.contains(p)) p,
+          ];
+          final lost = delivery == ReliableGroupDelivery.lost;
+          return SafeArea(
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                ListTile(
+                  title: Text(message.text, maxLines: 2),
+                  subtitle: Text(_deliveryLabel(l10n, delivery)),
+                  trailing: _DeliveryBadge(
+                    group: group,
+                    engine: engine,
+                    seq: message.seq,
+                  ),
+                ),
+                const Divider(height: 1),
+                if (acked.isNotEmpty)
+                  ListTile(
+                    dense: true,
+                    title: Text(l10n.reliableGroup_storedBy),
+                  ),
+                for (final p in acked)
+                  ListTile(
+                    leading: const Icon(
+                      Icons.check_circle,
+                      color: MeshPalette.signal,
+                    ),
+                    title: Text(group.members[p].name),
+                  ),
+                if (pending.isNotEmpty)
+                  ListTile(
+                    dense: true,
+                    title: Text(
+                      lost
+                          ? l10n.reliableGroup_notReachedBy
+                          : l10n.reliableGroup_notConfirmedBy,
+                    ),
+                  ),
+                for (final p in pending)
+                  ListTile(
+                    leading: Icon(
+                      lost ? Icons.cancel : Icons.schedule,
+                      color: lost ? MeshPalette.alert : MeshPalette.warn,
+                    ),
+                    title: Text(group.members[p].name),
+                  ),
+              ],
+            ),
+          );
+        },
       ),
+    );
+  }
+}
+
+String _deliveryLabel(AppLocalizations l10n, ReliableGroupDelivery delivery) =>
+    switch (delivery) {
+      ReliableGroupDelivery.queued => l10n.reliableGroup_deliveryQueued,
+      ReliableGroupDelivery.sent => l10n.reliableGroup_deliverySent,
+      ReliableGroupDelivery.delivered => l10n.reliableGroup_deliveryDelivered,
+      ReliableGroupDelivery.lost => l10n.reliableGroup_deliveryLost,
+    };
+
+/// Icon plus "received / recipients" count of an own message.
+class _DeliveryBadge extends StatelessWidget {
+  final ReliableGroup group;
+  final ReliableGroupEngine engine;
+  final int seq;
+
+  const _DeliveryBadge({
+    required this.group,
+    required this.engine,
+    required this.seq,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final delivery = engine.deliveryOf(seq, DateTime.now());
+    final (icon, color) = switch (delivery) {
+      ReliableGroupDelivery.queued => (
+        Icons.schedule,
+        theme.colorScheme.onSurfaceVariant,
+      ),
+      ReliableGroupDelivery.sent => (
+        Icons.done,
+        theme.colorScheme.onSurfaceVariant,
+      ),
+      ReliableGroupDelivery.delivered => (Icons.done_all, MeshPalette.signal),
+      ReliableGroupDelivery.lost => (Icons.error_outline, MeshPalette.alert),
+    };
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 16, color: color),
+        const SizedBox(width: 3),
+        Text(
+          '${engine.ackedBy(seq).length}/${group.members.length - 1}',
+          style: theme.textTheme.labelMedium?.copyWith(
+            color: color,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
     );
   }
 }

@@ -297,19 +297,83 @@ void main() {
       mesh.expectAllSettled();
     });
 
-    test('probing an absent member stops after maxProbes', () {
-      final mesh = SimMesh(6);
-      mesh.goOffline(5);
-      mesh.send(0, 'Hallo?');
-      mesh.runFor(const Duration(hours: 3));
-      final afterBackoff = mesh.totalPackets;
-      // 1 message, 4 acks, then one probe per round for the whole group:
-      // members that hear someone else probe count it as their own.
-      expect(afterBackoff, lessThanOrEqualTo(1 + 4 + 8));
-
-      mesh.runFor(const Duration(hours: 12));
-      expect(mesh.totalPackets, afterBackoff, reason: 'probing gave up');
+    test('everyone confirms within 60 seconds on a lossless mesh', () {
+      for (var seed = 1; seed <= 20; seed++) {
+        final mesh = SimMesh(6, seed: seed);
+        final message = mesh.send(seed % 6, 'Gleich da');
+        final sender = mesh.nodes[seed % 6];
+        expect(
+          sender.deliveryOf(message.seq, mesh.now),
+          ReliableGroupDelivery.queued,
+        );
+        mesh.runFor(const Duration(seconds: 1));
+        expect(
+          sender.deliveryOf(message.seq, mesh.now),
+          ReliableGroupDelivery.sent,
+        );
+        mesh.runFor(const Duration(seconds: 59));
+        expect(
+          sender.deliveryOf(message.seq, mesh.now),
+          ReliableGroupDelivery.delivered,
+          reason: 'seed $seed',
+        );
+      }
     });
+
+    test(
+      'an absent member is probed after 1, 2, 4 ... minutes for 12 hours',
+      () {
+        final mesh = SimMesh(6);
+        mesh.goOffline(5);
+        final message = mesh.send(0, 'Hallo?');
+        final probeTimes = <Duration>[];
+        mesh.drop = (from, to, packet) {
+          if (packet.kind == ReliableGroupPacketKind.status &&
+              packet.waitMask == 1 << 5) {
+            final at = mesh.now.difference(t0);
+            // Acks of the first 40 s name member 5 too; probes come later.
+            if (at < const Duration(seconds: 41)) return false;
+            if (probeTimes.isEmpty ||
+                at - probeTimes.last > const Duration(seconds: 5)) {
+              probeTimes.add(at);
+            }
+          }
+          return false;
+        };
+        mesh.runFor(const Duration(hours: 13));
+
+        // Waits double from one minute (±20 % jitter) up to the 12 h deadline.
+        expect(probeTimes.first.inSeconds, inInclusiveRange(41, 80));
+        // Doubling holds until the wait reaches its 4 h cap.
+        for (var i = 1; i < 7; i++) {
+          final gap = probeTimes[i] - probeTimes[i - 1];
+          final previous = i == 1
+              ? probeTimes[0]
+              : probeTimes[i - 1] - probeTimes[i - 2];
+          expect(
+            gap.inSeconds,
+            greaterThan(previous.inSeconds),
+            reason: '$probeTimes',
+          );
+        }
+        expect(
+          probeTimes.last,
+          lessThanOrEqualTo(const Duration(hours: 12, minutes: 1)),
+        );
+        expect(probeTimes.length, inInclusiveRange(8, 12));
+
+        final afterGiveUp = mesh.totalPackets;
+        mesh.runFor(const Duration(hours: 24));
+        expect(mesh.totalPackets, afterGiveUp, reason: 'probing gave up');
+
+        final sender = mesh.nodes[0];
+        expect(sender.ackedBy(message.seq), [1, 2, 3, 4]);
+        expect(
+          sender.deliveryOf(message.seq, mesh.now),
+          ReliableGroupDelivery.lost,
+        );
+      },
+    );
 
     for (final seed in [1, 2, 3, 4, 5, 6, 7, 8]) {
       test('30 messages over a mesh with 30 % loss converge (seed $seed)', () {
@@ -324,9 +388,9 @@ void main() {
 
         mesh.expectAllHave(sent);
         mesh.expectAllSettled();
-        // 30 originals plus acks, nacks, repairs and probes. 40 seeds peaked
-        // at 244 packets.
-        expect(mesh.totalPackets, lessThan(30 * 10));
+        // 30 originals plus acks, nacks, repairs and probes. 20 seeds peaked
+        // at 304 packets.
+        expect(mesh.totalPackets, lessThan(30 * 12));
       });
     }
 

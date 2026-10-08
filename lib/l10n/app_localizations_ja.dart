@@ -5299,10 +5299,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get reliableGroup_textTooLong => 'Message too long';
 
   @override
-  String get reliableGroup_storedBy => 'Stored by';
+  String get reliableGroup_storedBy => 'Received by';
 
   @override
-  String get reliableGroup_notConfirmedBy => 'Not confirmed yet';
+  String get reliableGroup_notConfirmedBy => 'Not received yet';
 
   @override
   String get reliableGroup_members => 'Members';
@@ -5337,4 +5337,20 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get reliableGroup_joinDesc =>
       'Join with the invite from the group\'s creator';
+
+  @override
+  String get reliableGroup_notReachedBy => 'Not reached';
+
+  @override
+  String get reliableGroup_deliveryQueued => 'Waiting for the radio';
+
+  @override
+  String get reliableGroup_deliverySent => 'Sent, waiting for confirmations';
+
+  @override
+  String get reliableGroup_deliveryDelivered => 'Received by everyone';
+
+  @override
+  String get reliableGroup_deliveryLost =>
+      'Lost: not confirmed by everyone within 12 hours';
 }

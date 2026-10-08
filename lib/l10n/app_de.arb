@@ -3209,8 +3209,8 @@
   "reliableGroup_statusWaiting": "Warte auf {names}",
   "reliableGroup_composeHint": "Nachricht",
   "reliableGroup_textTooLong": "Nachricht zu lang",
-  "reliableGroup_storedBy": "Gespeichert bei",
-  "reliableGroup_notConfirmedBy": "Noch nicht bestätigt",
+  "reliableGroup_storedBy": "Empfangen von",
+  "reliableGroup_notConfirmedBy": "Noch nicht empfangen",
   "reliableGroup_members": "Mitglieder",
   "reliableGroup_memberConfirmed": "Hat alles",
   "reliableGroup_memberNotConfirmed": "Nicht bestätigt",
@@ -3220,5 +3220,10 @@
   "reliableGroup_leaveConfirm": "{name} und alle Nachrichten von diesem Handy entfernen?",
   "reliableGroup_noMessages": "Noch keine Nachrichten",
   "reliableGroup_createDesc": "Private Gruppe, in der jedes Mitglied jede Nachricht bestätigt; Verpasstes wird automatisch nachgeliefert",
-  "reliableGroup_joinDesc": "Mit der Einladung vom Ersteller der Gruppe beitreten"
+  "reliableGroup_joinDesc": "Mit der Einladung vom Ersteller der Gruppe beitreten",
+  "reliableGroup_notReachedBy": "Nicht erreicht",
+  "reliableGroup_deliveryQueued": "Wartet auf das Funkgerät",
+  "reliableGroup_deliverySent": "Gesendet, warte auf Bestätigungen",
+  "reliableGroup_deliveryDelivered": "Von allen empfangen",
+  "reliableGroup_deliveryLost": "Verloren: nicht innerhalb von 12 Stunden von allen bestätigt"
 }

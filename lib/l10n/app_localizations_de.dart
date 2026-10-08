@@ -5581,10 +5581,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get reliableGroup_textTooLong => 'Nachricht zu lang';
 
   @override
-  String get reliableGroup_storedBy => 'Gespeichert bei';
+  String get reliableGroup_storedBy => 'Empfangen von';
 
   @override
-  String get reliableGroup_notConfirmedBy => 'Noch nicht bestätigt';
+  String get reliableGroup_notConfirmedBy => 'Noch nicht empfangen';
 
   @override
   String get reliableGroup_members => 'Mitglieder';
@@ -5619,4 +5619,20 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get reliableGroup_joinDesc =>
       'Mit der Einladung vom Ersteller der Gruppe beitreten';
+
+  @override
+  String get reliableGroup_notReachedBy => 'Nicht erreicht';
+
+  @override
+  String get reliableGroup_deliveryQueued => 'Wartet auf das Funkgerät';
+
+  @override
+  String get reliableGroup_deliverySent => 'Gesendet, warte auf Bestätigungen';
+
+  @override
+  String get reliableGroup_deliveryDelivered => 'Von allen empfangen';
+
+  @override
+  String get reliableGroup_deliveryLost =>
+      'Verloren: nicht innerhalb von 12 Stunden von allen bestätigt';
 }

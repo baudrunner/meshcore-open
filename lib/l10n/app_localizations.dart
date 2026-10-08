@@ -9433,13 +9433,13 @@ abstract class AppLocalizations {
   /// No description provided for @reliableGroup_storedBy.
   ///
   /// In en, this message translates to:
-  /// **'Stored by'**
+  /// **'Received by'**
   String get reliableGroup_storedBy;
 
   /// No description provided for @reliableGroup_notConfirmedBy.
   ///
   /// In en, this message translates to:
-  /// **'Not confirmed yet'**
+  /// **'Not received yet'**
   String get reliableGroup_notConfirmedBy;
 
   /// No description provided for @reliableGroup_members.
@@ -9501,6 +9501,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Join with the invite from the group\'s creator'**
   String get reliableGroup_joinDesc;
+
+  /// No description provided for @reliableGroup_notReachedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Not reached'**
+  String get reliableGroup_notReachedBy;
+
+  /// No description provided for @reliableGroup_deliveryQueued.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for the radio'**
+  String get reliableGroup_deliveryQueued;
+
+  /// No description provided for @reliableGroup_deliverySent.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent, waiting for confirmations'**
+  String get reliableGroup_deliverySent;
+
+  /// No description provided for @reliableGroup_deliveryDelivered.
+  ///
+  /// In en, this message translates to:
+  /// **'Received by everyone'**
+  String get reliableGroup_deliveryDelivered;
+
+  /// No description provided for @reliableGroup_deliveryLost.
+  ///
+  /// In en, this message translates to:
+  /// **'Lost: not confirmed by everyone within 12 hours'**
+  String get reliableGroup_deliveryLost;
 }
 
 class _AppLocalizationsDelegate

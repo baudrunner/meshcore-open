@@ -33,7 +33,12 @@
     "reliableGroup_leaveConfirm",
     "reliableGroup_noMessages",
     "reliableGroup_createDesc",
-    "reliableGroup_joinDesc"
+    "reliableGroup_joinDesc",
+    "reliableGroup_notReachedBy",
+    "reliableGroup_deliveryQueued",
+    "reliableGroup_deliverySent",
+    "reliableGroup_deliveryDelivered",
+    "reliableGroup_deliveryLost"
   ],
 
   "es": [
@@ -70,7 +75,12 @@
     "reliableGroup_leaveConfirm",
     "reliableGroup_noMessages",
     "reliableGroup_createDesc",
-    "reliableGroup_joinDesc"
+    "reliableGroup_joinDesc",
+    "reliableGroup_notReachedBy",
+    "reliableGroup_deliveryQueued",
+    "reliableGroup_deliverySent",
+    "reliableGroup_deliveryDelivered",
+    "reliableGroup_deliveryLost"
   ],
 
   "fr": [
@@ -107,7 +117,12 @@
     "reliableGroup_leaveConfirm",
     "reliableGroup_noMessages",
     "reliableGroup_createDesc",
-    "reliableGroup_joinDesc"
+    "reliableGroup_joinDesc",
+    "reliableGroup_notReachedBy",
+    "reliableGroup_deliveryQueued",
+    "reliableGroup_deliverySent",
+    "reliableGroup_deliveryDelivered",
+    "reliableGroup_deliveryLost"
   ],
 
   "hu": [
@@ -144,7 +159,12 @@
     "reliableGroup_leaveConfirm",
     "reliableGroup_noMessages",
     "reliableGroup_createDesc",
-    "reliableGroup_joinDesc"
+    "reliableGroup_joinDesc",
+    "reliableGroup_notReachedBy",
+    "reliableGroup_deliveryQueued",
+    "reliableGroup_deliverySent",
+    "reliableGroup_deliveryDelivered",
+    "reliableGroup_deliveryLost"
   ],
 
   "it": [
@@ -181,7 +201,12 @@
     "reliableGroup_leaveConfirm",
     "reliableGroup_noMessages",
     "reliableGroup_createDesc",
-    "reliableGroup_joinDesc"
+    "reliableGroup_joinDesc",
+    "reliableGroup_notReachedBy",
+    "reliableGroup_deliveryQueued",
+    "reliableGroup_deliverySent",
+    "reliableGroup_deliveryDelivered",
+    "reliableGroup_deliveryLost"
   ],
 
   "ja": [
@@ -218,7 +243,12 @@
     "reliableGroup_leaveConfirm",
     "reliableGroup_noMessages",
     "reliableGroup_createDesc",
-    "reliableGroup_joinDesc"
+    "reliableGroup_joinDesc",
+    "reliableGroup_notReachedBy",
+    "reliableGroup_deliveryQueued",
+    "reliableGroup_deliverySent",
+    "reliableGroup_deliveryDelivered",
+    "reliableGroup_deliveryLost"
   ],
 
   "ko": [
@@ -255,7 +285,12 @@
     "reliableGroup_leaveConfirm",
     "reliableGroup_noMessages",
     "reliableGroup_createDesc",
-    "reliableGroup_joinDesc"
+    "reliableGroup_joinDesc",
+    "reliableGroup_notReachedBy",
+    "reliableGroup_deliveryQueued",
+    "reliableGroup_deliverySent",
+    "reliableGroup_deliveryDelivered",
+    "reliableGroup_deliveryLost"
   ],
 
   "nl": [
@@ -292,7 +327,12 @@
     "reliableGroup_leaveConfirm",
     "reliableGroup_noMessages",
     "reliableGroup_createDesc",
-    "reliableGroup_joinDesc"
+    "reliableGroup_joinDesc",
+    "reliableGroup_notReachedBy",
+    "reliableGroup_deliveryQueued",
+    "reliableGroup_deliverySent",
+    "reliableGroup_deliveryDelivered",
+    "reliableGroup_deliveryLost"
   ],
 
   "pl": [
@@ -329,7 +369,12 @@
     "reliableGroup_leaveConfirm",
     "reliableGroup_noMessages",
     "reliableGroup_createDesc",
-    "reliableGroup_joinDesc"
+    "reliableGroup_joinDesc",
+    "reliableGroup_notReachedBy",
+    "reliableGroup_deliveryQueued",
+    "reliableGroup_deliverySent",
+    "reliableGroup_deliveryDelivered",
+    "reliableGroup_deliveryLost"
   ],
 
   "pt": [
@@ -366,7 +411,12 @@
     "reliableGroup_leaveConfirm",
     "reliableGroup_noMessages",
     "reliableGroup_createDesc",
-    "reliableGroup_joinDesc"
+    "reliableGroup_joinDesc",
+    "reliableGroup_notReachedBy",
+    "reliableGroup_deliveryQueued",
+    "reliableGroup_deliverySent",
+    "reliableGroup_deliveryDelivered",
+    "reliableGroup_deliveryLost"
   ],
 
   "ru": [
@@ -403,7 +453,12 @@
     "reliableGroup_leaveConfirm",
     "reliableGroup_noMessages",
     "reliableGroup_createDesc",
-    "reliableGroup_joinDesc"
+    "reliableGroup_joinDesc",
+    "reliableGroup_notReachedBy",
+    "reliableGroup_deliveryQueued",
+    "reliableGroup_deliverySent",
+    "reliableGroup_deliveryDelivered",
+    "reliableGroup_deliveryLost"
   ],
 
   "sk": [
@@ -440,7 +495,12 @@
     "reliableGroup_leaveConfirm",
     "reliableGroup_noMessages",
     "reliableGroup_createDesc",
-    "reliableGroup_joinDesc"
+    "reliableGroup_joinDesc",
+    "reliableGroup_notReachedBy",
+    "reliableGroup_deliveryQueued",
+    "reliableGroup_deliverySent",
+    "reliableGroup_deliveryDelivered",
+    "reliableGroup_deliveryLost"
   ],
 
   "sl": [
@@ -477,7 +537,12 @@
     "reliableGroup_leaveConfirm",
     "reliableGroup_noMessages",
     "reliableGroup_createDesc",
-    "reliableGroup_joinDesc"
+    "reliableGroup_joinDesc",
+    "reliableGroup_notReachedBy",
+    "reliableGroup_deliveryQueued",
+    "reliableGroup_deliverySent",
+    "reliableGroup_deliveryDelivered",
+    "reliableGroup_deliveryLost"
   ],
 
   "sv": [
@@ -514,7 +579,12 @@
     "reliableGroup_leaveConfirm",
     "reliableGroup_noMessages",
     "reliableGroup_createDesc",
-    "reliableGroup_joinDesc"
+    "reliableGroup_joinDesc",
+    "reliableGroup_notReachedBy",
+    "reliableGroup_deliveryQueued",
+    "reliableGroup_deliverySent",
+    "reliableGroup_deliveryDelivered",
+    "reliableGroup_deliveryLost"
   ],
 
   "uk": [
@@ -551,7 +621,12 @@
     "reliableGroup_leaveConfirm",
     "reliableGroup_noMessages",
     "reliableGroup_createDesc",
-    "reliableGroup_joinDesc"
+    "reliableGroup_joinDesc",
+    "reliableGroup_notReachedBy",
+    "reliableGroup_deliveryQueued",
+    "reliableGroup_deliverySent",
+    "reliableGroup_deliveryDelivered",
+    "reliableGroup_deliveryLost"
   ],
 
   "zh": [
@@ -588,6 +663,11 @@
     "reliableGroup_leaveConfirm",
     "reliableGroup_noMessages",
     "reliableGroup_createDesc",
-    "reliableGroup_joinDesc"
+    "reliableGroup_joinDesc",
+    "reliableGroup_notReachedBy",
+    "reliableGroup_deliveryQueued",
+    "reliableGroup_deliverySent",
+    "reliableGroup_deliveryDelivered",
+    "reliableGroup_deliveryLost"
   ]
 }

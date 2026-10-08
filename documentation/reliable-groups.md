@@ -19,18 +19,22 @@ The invite contains the channel key. Share it only with the members. Joining add
 
 ## Status
 
+Every own message shows how many of the other members have received it, updating live:
+
 | Display | Meaning |
 |---|---|
-| Green: complete | You hold every message anyone has reported, and every member has confirmed holding all of them. |
-| Yellow: waiting for … | These members have not confirmed the latest messages yet, e.g. because they are out of range. |
-| Red: N missing | Messages exist that you do not have yet; they are requested automatically. |
-| `3/5` on your message | Three of the five other members have stored it. Tap the message for names. |
+| 🕓 `0/5` | Waiting for the radio, e.g. while disconnected. |
+| ✓ `3/5` | Sent; three of five have confirmed receiving it. |
+| ✓✓ `5/5` (green) | Received by everyone. |
+| ⚠ `3/5` (red) | Lost: not confirmed by everyone within 12 hours. |
 
-"Stored" means saved by the member's app, not read by the person. The status reflects the last reports heard: a member out of range may have written something since.
+Tap or long-press an own message to see who received it and who did not. "Received" means stored by the member's app, not read by the person. The group header shows whether everyone has everything, who is not confirmed, or how many messages are being fetched.
 
-## Traffic
+## Timing and traffic
 
-Confirmations are batched: each member acknowledges after 20–60 seconds, and any message it sends in the meantime carries the acknowledgement. Missing members are asked with growing intervals, and asking stops after 8 rounds until something new happens. A group in which everyone has everything sends nothing. In simulation, 30 messages over six members cost about 130 packets without loss and about 225 with 30 % packet loss; most extra packets are 21-byte status packets. Pick the [region](regions.md) of the group's channel so that floods reach all members and no further.
+With everyone in range, all confirmations arrive within about a minute: each member confirms 5–40 seconds after receiving, batching bursts into one confirmation, and any message it sends in the meantime carries the confirmation. Unconfirmed members are asked again after 1 minute, then after 2, 4, 8 … minutes (at most 4 hours apart); 12 hours after the last news, asking stops and unconfirmed messages count as lost. Anything new restarts the cycle, and a group in which everyone has everything sends nothing.
+
+In simulation, 30 messages over six members cost about 160 packets without loss and about 270 with 30 % packet loss; most extra packets are 21-byte status packets. Pick the [region](regions.md) of the group's channel so that floods reach all members and no further.
 
 ## Limits
 

@@ -29,9 +29,10 @@
 ///   that someone else already sent.
 /// * While a member cannot confirm that everyone has everything it has, it
 ///   probes with exponential backoff, naming the members it waits for in
-///   `wait_mask`. Named members answer with a status. Probes stop after
-///   [ReliableGroupTiming.maxProbes] until something new happens, and a
-///   settled group sends nothing at all.
+///   `wait_mask`. Named members answer with a status. The first probe follows
+///   after a minute, each further one after twice the previous wait; after
+///   [ReliableGroupTiming.probeGiveUp] probing stops until something new
+///   happens, and a settled group sends nothing at all.
 library;
 
 import 'dart:convert';
@@ -71,15 +72,18 @@ class ReliableGroupTiming {
 
   final Duration probeInitial;
   final Duration probeMax;
-  final int maxProbes;
+
+  /// Probing stops this long after the last news. Own messages that are not
+  /// confirmed by everyone after this long count as lost.
+  final Duration probeGiveUp;
 
   /// Delay range of the hello status sent by [ReliableGroupEngine.announce].
   final Duration announceDelayMin;
   final Duration announceDelayMax;
 
   const ReliableGroupTiming({
-    this.ackDelayMin = const Duration(seconds: 20),
-    this.ackDelayMax = const Duration(seconds: 60),
+    this.ackDelayMin = const Duration(seconds: 5),
+    this.ackDelayMax = const Duration(seconds: 40),
     this.nackDelayMin = const Duration(seconds: 1),
     this.nackDelayMax = const Duration(seconds: 5),
     this.statusHoldoff = const Duration(seconds: 10),
@@ -89,12 +93,26 @@ class ReliableGroupTiming {
     this.repairOtherDelayMax = const Duration(seconds: 12),
     this.repairGuard = const Duration(seconds: 20),
     this.repairBatch = 4,
-    this.probeInitial = const Duration(seconds: 90),
-    this.probeMax = const Duration(minutes: 10),
-    this.maxProbes = 8,
+    this.probeInitial = const Duration(minutes: 1),
+    this.probeMax = const Duration(hours: 4),
+    this.probeGiveUp = const Duration(hours: 12),
     this.announceDelayMin = const Duration(seconds: 1),
     this.announceDelayMax = const Duration(seconds: 6),
   });
+}
+
+enum ReliableGroupDelivery {
+  /// Composed, not handed to the radio yet.
+  queued,
+
+  /// On air; not every member has confirmed it yet.
+  sent,
+
+  /// Every other member has confirmed storing it.
+  delivered,
+
+  /// Not confirmed by everyone within [ReliableGroupTiming.probeGiveUp].
+  lost,
 }
 
 class ReliableGroupConfig {
@@ -148,6 +166,9 @@ class ReliableGroupEngine {
   final Map<int, DateTime> _storedAt = {};
 
   final List<Uint8List> _outbox = [];
+
+  /// Own messages composed but not yet handed to [poll].
+  final Set<int> _unsentOwn = {};
   final Map<int, _Repair> _repairs = {};
   DateTime? _statusDueAt;
   bool _statusIsHello = false;
@@ -155,7 +176,7 @@ class ReliableGroupEngine {
 
   DateTime? _probeDueAt;
   late Duration _probeInterval = timing.probeInitial;
-  int _probeCount = 0;
+  DateTime? _probeSeriesStart;
 
   ReliableGroupEngine({
     required this.config,
@@ -209,6 +230,18 @@ class ReliableGroupEngine {
     for (var p = 0; p < _n; p++)
       if (p != _self && _known[p][_self] >= seq) p,
   ];
+
+  /// Delivery state of our own message [seq] at [now].
+  ReliableGroupDelivery deliveryOf(int seq, DateTime now) {
+    if (_unsentOwn.contains(seq)) return ReliableGroupDelivery.queued;
+    if (ackedBy(seq).length == _n - 1) return ReliableGroupDelivery.delivered;
+    final message = _messages[_self][seq];
+    if (message != null &&
+        now.difference(message.timestamp) >= timing.probeGiveUp) {
+      return ReliableGroupDelivery.lost;
+    }
+    return ReliableGroupDelivery.sent;
+  }
 
   /// When we last heard any packet from [member].
   DateTime? lastHeard(int member) => _lastHeard[member];
@@ -272,6 +305,7 @@ class ReliableGroupEngine {
     }
     _store(message, now);
     _outbox.add(_encodeMessage(message));
+    _unsentOwn.add(seq);
     _markSent(now);
     _resetProbe(now);
     return message;
@@ -369,6 +403,7 @@ class ReliableGroupEngine {
   List<Uint8List> poll(DateTime now) {
     final out = <Uint8List>[..._outbox];
     _outbox.clear();
+    _unsentOwn.clear();
 
     final dueRepairs =
         _repairs.entries.where((e) => !e.value.dueAt.isAfter(now)).toList()
@@ -563,7 +598,7 @@ class ReliableGroupEngine {
 
   void _resetProbe(DateTime now) {
     _probeInterval = timing.probeInitial;
-    _probeCount = 0;
+    _probeSeriesStart = now;
     _probeDueAt = null;
     _updateProbe(now);
   }
@@ -572,16 +607,18 @@ class ReliableGroupEngine {
     if (isSettled) {
       _probeDueAt = null;
       _probeInterval = timing.probeInitial;
-      _probeCount = 0;
+      _probeSeriesStart = null;
       return;
     }
-    if (_probeDueAt == null && _probeCount < timing.maxProbes) {
-      _probeDueAt = now.add(_spread(_probeInterval));
-    }
+    if (_probeDueAt != null) return;
+    final deadline = (_probeSeriesStart ??= now).add(timing.probeGiveUp);
+    if (!now.isBefore(deadline)) return;
+    final due = now.add(_spread(_probeInterval));
+    // One last try at the deadline rather than none past it.
+    _probeDueAt = due.isBefore(deadline) ? due : deadline;
   }
 
   void _advanceProbe(DateTime now) {
-    _probeCount++;
     final doubled = _probeInterval * 2;
     _probeInterval = doubled > timing.probeMax ? timing.probeMax : doubled;
     _probeDueAt = null;
