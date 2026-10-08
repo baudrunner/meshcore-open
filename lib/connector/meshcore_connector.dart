@@ -916,6 +916,48 @@ class MeshCoreConnector extends ChangeNotifier {
     }
   }
 
+  /// Sends notification replies for channels whose messages are not channel
+  /// text, such as reliable groups. Returns false when it does not handle
+  /// [channelIndex]; throws [ArgumentError] when the text is too long.
+  Future<bool> Function(int channelIndex, String text)? channelReplyOverride;
+
+  /// Counts and announces a message that arrived on [channelIndex] outside
+  /// channel text (e.g. a reliable group message), like a channel message.
+  void notifyChannelDataMessage({
+    required int channelIndex,
+    required String senderName,
+    required String text,
+  }) {
+    final channel = _findChannelByIndex(channelIndex);
+    if (channel == null || _activeChannelIndex == channelIndex) return;
+    channel.unreadCount++;
+    _cachedChannelsUnreadTotal++;
+    unawaited(
+      _channelStore.saveChannels(
+        _channels.isNotEmpty ? _channels : _cachedChannels,
+      ),
+    );
+    notifyListeners();
+    final settings = _appSettingsService?.settings;
+    if (settings == null ||
+        !settings.notificationsEnabled ||
+        !settings.notifyOnNewChannelMessage) {
+      return;
+    }
+    final label = _channelDisplayName(channelIndex);
+    if (_appSettingsService!.isChannelMuted(label)) return;
+    unawaited(
+      _notificationService.showChannelMessageNotification(
+        channelName: label,
+        senderName: senderName,
+        message: text.trim(),
+        urlImagesEnabled: false,
+        channelIndex: channelIndex,
+        badgeCount: getTotalUnreadCount(),
+      ),
+    );
+  }
+
   void setActiveChannel(int? channelIndex) {
     _activeChannelIndex = channelIndex;
     if (channelIndex != null) {
@@ -1052,6 +1094,27 @@ class MeshCoreConnector extends ChangeNotifier {
         badgeCount: getTotalUnreadCount(),
       );
       return;
+    }
+
+    final override = channel == null ? null : channelReplyOverride;
+    if (override != null) {
+      try {
+        if (await override(channel!.index, reply.text)) {
+          await _notificationService.showOwnReply(
+            reply,
+            reply.text,
+            badgeCount: getTotalUnreadCount(),
+          );
+          return;
+        }
+      } on ArgumentError {
+        await _notificationService.showReplyFailed(
+          reply,
+          NotificationReplyFailure.tooLong,
+          badgeCount: getTotalUnreadCount(),
+        );
+        return;
+      }
     }
 
     // Same length limits and Cyr2Lat handling as the chat screens.

@@ -80,15 +80,29 @@ class _ReliableGroupChatScreenState extends State<ReliableGroupChatScreen>
     with DisconnectNavigationMixin {
   final TextEditingController _text = TextEditingController();
   bool _sending = false;
+  MeshCoreConnector? _connector;
 
   @override
   void initState() {
     super.initState();
     _text.addListener(() => setState(() {}));
+    // While open, new group messages are read: no unread count, no
+    // notification, and earlier ones are marked read.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final service = context.read<ReliableGroupService>();
+      final group = service.groupById(widget.groupId);
+      final connector = context.read<MeshCoreConnector>();
+      connector.setActiveChannel(
+        group == null ? null : service.channelIndexFor(group),
+      );
+      _connector = connector;
+    });
   }
 
   @override
   void dispose() {
+    _connector?.setActiveChannel(null);
     _text.dispose();
     super.dispose();
   }

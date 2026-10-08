@@ -39,6 +39,7 @@ class ReliableGroupService extends ChangeNotifier {
   ReliableGroupService(this._connector) {
     _connector.addListener(_onConnectorChanged);
     _frames = _connector.receivedFrames.listen(_onFrame);
+    _connector.channelReplyOverride = _replyFromNotification;
     _onConnectorChanged();
   }
 
@@ -211,9 +212,16 @@ class ReliableGroupService extends ChangeNotifier {
       if (channelIndexFor(group) != data.channelIndex) continue;
       final engine = _engines[group.groupId];
       if (engine == null) continue;
-      engine.receive(data.payload, now);
+      final stored = engine.receive(data.payload, now);
       _dirty.add(group.groupId);
       changed = true;
+      if (stored != null && stored.author != engine.config.selfIndex) {
+        _connector.notifyChannelDataMessage(
+          channelIndex: data.channelIndex,
+          senderName: group.members[stored.author].name,
+          text: stored.text,
+        );
+      }
     }
     if (!changed) return;
     _saveTimer ??= Timer(_saveDelay, _flushSaves);
@@ -281,8 +289,21 @@ class ReliableGroupService extends ChangeNotifier {
     _scheduleWake();
   }
 
+  Future<bool> _replyFromNotification(int channelIndex, String text) async {
+    for (final group in _groups) {
+      if (channelIndexFor(group) != channelIndex) continue;
+      if (!_engines.containsKey(group.groupId)) return false;
+      await sendMessage(group.groupId, text.trim());
+      return true;
+    }
+    return false;
+  }
+
   @override
   void dispose() {
+    if (_connector.channelReplyOverride == _replyFromNotification) {
+      _connector.channelReplyOverride = null;
+    }
     _connector.removeListener(_onConnectorChanged);
     unawaited(_frames.cancel());
     _wakeTimer?.cancel();
