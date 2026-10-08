@@ -30,6 +30,27 @@ void main() {
       expect(parsed.indexOf(keyOf(9)), isNull);
     });
 
+    test('finds the invite in messenger-mangled text', () {
+      final group = sampleGroup();
+      final code = group.inviteCode;
+      final wrapped = [
+        for (var i = 0; i < code.length; i += 40)
+          code.substring(i, math.min(i + 40, code.length)),
+      ].join('\n');
+      for (final text in [
+        'Hier die Einladung: $code Bis gleich!',
+        '$code$code',
+        '$code\n$code',
+        wrapped,
+      ]) {
+        expect(
+          ReliableGroup.fromInviteCode(text)?.toJson(),
+          group.toJson(),
+          reason: text,
+        );
+      }
+    });
+
     test('rejects codes that are not reliable group invites', () {
       expect(ReliableGroup.fromInviteCode('hello'), isNull);
       expect(ReliableGroup.fromInviteCode('mcrg1:'), isNull);

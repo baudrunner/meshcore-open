@@ -107,15 +107,27 @@ class ReliableGroup {
   String get inviteCode =>
       invitePrefix + base64Url.encode(utf8.encode(jsonEncode(toJson())));
 
-  /// Parses an [inviteCode], or returns null when it is not a valid one.
-  static ReliableGroup? fromInviteCode(String code) {
-    final trimmed = code.trim();
-    if (!trimmed.startsWith(invitePrefix)) return null;
+  /// Parses an [inviteCode], or returns null when [text] holds no valid one.
+  /// Tolerates what copying through messengers adds: surrounding text, line
+  /// breaks inside the code, and the code pasted twice.
+  static ReliableGroup? fromInviteCode(String text) {
+    final segments = text.split(invitePrefix).skip(1);
+    for (final segment in segments) {
+      final compact = segment.replaceAll(RegExp(r'\s'), '');
+      for (final candidate in [segment, compact]) {
+        final payload = RegExp(r'^[A-Za-z0-9_=-]+').stringMatch(candidate);
+        final group = payload == null ? null : _parsePayload(payload);
+        if (group != null) return group;
+      }
+    }
+    return null;
+  }
+
+  static ReliableGroup? _parsePayload(String payload) {
     try {
-      final payload = base64Url.normalize(
-        trimmed.substring(invitePrefix.length),
+      final json = jsonDecode(
+        utf8.decode(base64Url.decode(base64Url.normalize(payload))),
       );
-      final json = jsonDecode(utf8.decode(base64Url.decode(payload)));
       final group = ReliableGroup.fromJson(
         (json as Map).cast<String, dynamic>(),
       );

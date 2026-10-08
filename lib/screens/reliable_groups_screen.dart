@@ -120,8 +120,13 @@ class _ReliableGroupsScreenState extends State<ReliableGroupsScreen>
   Future<void> _pasteInvite(BuildContext context) async {
     final controller = TextEditingController();
     final clipboard = await Clipboard.getData(Clipboard.kTextPlain);
-    if (clipboard?.text?.startsWith(ReliableGroup.invitePrefix) ?? false) {
-      controller.text = clipboard!.text!;
+    // Prefill a copied invite, selected, so pasting it again replaces it.
+    final copied = clipboard?.text ?? '';
+    if (ReliableGroup.fromInviteCode(copied) != null) {
+      controller.value = TextEditingValue(
+        text: copied,
+        selection: TextSelection(baseOffset: 0, extentOffset: copied.length),
+      );
     }
     if (!context.mounted) return;
     final l10n = context.l10n;
