@@ -11,11 +11,11 @@ A reliable group is a fixed list of up to 16 members on its own private channel.
 
 ## Create and join
 
-1. Channels → menu → **Reliable groups** → **+** → **Create group**.
+1. Channels → **+** → **Create reliable group**.
 2. Enter a name and select the members from your chat contacts. You are always a member.
-3. Share the invite: members scan the QR code or paste the copied text through **Scan invite QR code** or **Paste invite**.
+3. Share the invite: members choose Channels → **+** → **Join reliable group (scan QR)** or **Join reliable group (paste invite)**. The invite is too long for a mesh message; show the QR code or send the text another way.
 
-The invite contains the channel key. Share it only with the members. Joining adds the group's private channel to the radio; the channel also appears in the channel list, but its chat stays empty because group messages are not channel text.
+The invite contains the channel key. Share it only with the members. Joining adds the group's private channel to the radio. In the channel list it is marked with a shield icon and its completeness status, and tapping it opens the group chat with confirmations.
 
 ## Status
 

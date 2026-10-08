@@ -5485,23 +5485,13 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get reliableGroup_title => 'Reliable groups';
+  String get reliableGroup_create => 'Create reliable group';
 
   @override
-  String get reliableGroup_empty => 'No reliable groups yet';
+  String get reliableGroup_joinPaste => 'Join reliable group (paste invite)';
 
   @override
-  String get reliableGroup_emptyHint =>
-      'Every member confirms every message, and missing messages are resent automatically.';
-
-  @override
-  String get reliableGroup_create => 'Create group';
-
-  @override
-  String get reliableGroup_joinPaste => 'Paste invite';
-
-  @override
-  String get reliableGroup_joinScan => 'Scan invite QR code';
+  String get reliableGroup_joinScan => 'Join reliable group (scan QR)';
 
   @override
   String get reliableGroup_name => 'Group name';
@@ -5607,4 +5597,12 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get reliableGroup_noMessages => 'No messages yet';
+
+  @override
+  String get reliableGroup_createDesc =>
+      'Private group in which every member confirms every message; missed messages are resent automatically';
+
+  @override
+  String get reliableGroup_joinDesc =>
+      'Join with the invite from the group\'s creator';
 }

@@ -3187,12 +3187,9 @@
     }
   },
   "receivedImage_saveFailed": "Das Bild konnte nicht gespeichert werden",
-  "reliableGroup_title": "Gesicherte Gruppen",
-  "reliableGroup_empty": "Noch keine gesicherten Gruppen",
-  "reliableGroup_emptyHint": "Jedes Mitglied bestätigt jede Nachricht, fehlende Nachrichten werden automatisch nachgeliefert.",
-  "reliableGroup_create": "Gruppe erstellen",
-  "reliableGroup_joinPaste": "Einladung einfügen",
-  "reliableGroup_joinScan": "Einladungs-QR-Code scannen",
+  "reliableGroup_create": "Gesicherte Gruppe erstellen",
+  "reliableGroup_joinPaste": "Gesicherter Gruppe beitreten (Einladung einfügen)",
+  "reliableGroup_joinScan": "Gesicherter Gruppe beitreten (QR scannen)",
   "reliableGroup_name": "Gruppenname",
   "reliableGroup_selectedMembers": "Mitglieder: du und {count} weitere",
   "reliableGroup_tooManyMembers": "Höchstens {max} Mitglieder",
@@ -3221,5 +3218,7 @@
   "reliableGroup_you": "Du",
   "reliableGroup_leave": "Gruppe verlassen",
   "reliableGroup_leaveConfirm": "{name} und alle Nachrichten von diesem Handy entfernen?",
-  "reliableGroup_noMessages": "Noch keine Nachrichten"
+  "reliableGroup_noMessages": "Noch keine Nachrichten",
+  "reliableGroup_createDesc": "Private Gruppe, in der jedes Mitglied jede Nachricht bestätigt; Verpasstes wird automatisch nachgeliefert",
+  "reliableGroup_joinDesc": "Mit der Einladung vom Ersteller der Gruppe beitreten"
 }

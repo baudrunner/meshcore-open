@@ -16,210 +16,94 @@ import '../widgets/qr_code_display.dart';
 import '../widgets/qr_scanner_widget.dart';
 import 'reliable_group_chat_screen.dart';
 
-class ReliableGroupsScreen extends StatefulWidget {
-  const ReliableGroupsScreen({super.key});
-
-  @override
-  State<ReliableGroupsScreen> createState() => _ReliableGroupsScreenState();
+/// Scans an invite QR code and joins its group.
+Future<void> scanReliableGroupInvite(BuildContext context) async {
+  final code = await Navigator.push<String>(
+    context,
+    MaterialPageRoute(builder: (_) => const _InviteScannerScreen()),
+  );
+  if (code != null && context.mounted) await _join(context, code);
 }
 
-class _ReliableGroupsScreenState extends State<ReliableGroupsScreen>
-    with DisconnectNavigationMixin {
-  @override
-  Widget build(BuildContext context) {
-    final connector = context.watch<MeshCoreConnector>();
-    final service = context.watch<ReliableGroupService>();
-    if (!checkConnectionAndNavigate(connector)) {
-      return const SizedBox.shrink();
-    }
-    final l10n = context.l10n;
-    return Scaffold(
-      appBar: AppBar(
-        title: AdaptiveAppBarTitle(l10n.reliableGroup_title),
-        centerTitle: true,
-      ),
-      floatingActionButton: service.isSupported
-          ? FloatingActionButton(
-              onPressed: () => _showAddMenu(context),
-              tooltip: l10n.reliableGroup_create,
-              child: const Icon(Icons.add),
-            )
-          : null,
-      body: !service.isSupported
-          ? EmptyState(
-              icon: Icons.verified_user_outlined,
-              title: l10n.reliableGroup_title,
-              subtitle: l10n.reliableGroup_unsupported,
-            )
-          : service.groups.isEmpty
-          ? EmptyState(
-              icon: Icons.verified_user_outlined,
-              title: l10n.reliableGroup_empty,
-              subtitle: l10n.reliableGroup_emptyHint,
-            )
-          : ListView(
-              children: [
-                for (final group in service.groups)
-                  _GroupTile(group: group, service: service),
-              ],
-            ),
+/// Asks for a pasted invite text and joins its group.
+Future<void> pasteReliableGroupInvite(BuildContext context) async {
+  final controller = TextEditingController();
+  final clipboard = await Clipboard.getData(Clipboard.kTextPlain);
+  // Prefill a copied invite, selected, so pasting it again replaces it.
+  final copied = clipboard?.text ?? '';
+  if (ReliableGroup.fromInviteCode(copied) != null) {
+    controller.value = TextEditingValue(
+      text: copied,
+      selection: TextSelection(baseOffset: 0, extentOffset: copied.length),
     );
   }
-
-  void _showAddMenu(BuildContext context) {
-    final l10n = context.l10n;
-    showModalBottomSheet<void>(
-      context: context,
-      builder: (sheetContext) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.group_add),
-              title: Text(l10n.reliableGroup_create),
-              onTap: () {
-                Navigator.pop(sheetContext);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const ReliableGroupCreateScreen(),
-                  ),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.qr_code_scanner),
-              title: Text(l10n.reliableGroup_joinScan),
-              onTap: () {
-                Navigator.pop(sheetContext);
-                _scanInvite(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.content_paste),
-              title: Text(l10n.reliableGroup_joinPaste),
-              onTap: () {
-                Navigator.pop(sheetContext);
-                _pasteInvite(context);
-              },
-            ),
-          ],
+  if (!context.mounted) return;
+  final l10n = context.l10n;
+  final code = await showDialog<String>(
+    context: context,
+    builder: (dialogContext) => AlertDialog(
+      title: Text(l10n.reliableGroup_joinPaste),
+      content: TextField(
+        controller: controller,
+        autofocus: true,
+        maxLines: 4,
+        decoration: InputDecoration(
+          hintText: l10n.reliableGroup_invitePasteHint,
         ),
       ),
-    );
-  }
-
-  Future<void> _scanInvite(BuildContext context) async {
-    final code = await Navigator.push<String>(
-      context,
-      MaterialPageRoute(builder: (_) => const _InviteScannerScreen()),
-    );
-    if (code != null && context.mounted) await _join(context, code);
-  }
-
-  Future<void> _pasteInvite(BuildContext context) async {
-    final controller = TextEditingController();
-    final clipboard = await Clipboard.getData(Clipboard.kTextPlain);
-    // Prefill a copied invite, selected, so pasting it again replaces it.
-    final copied = clipboard?.text ?? '';
-    if (ReliableGroup.fromInviteCode(copied) != null) {
-      controller.value = TextEditingValue(
-        text: copied,
-        selection: TextSelection(baseOffset: 0, extentOffset: copied.length),
-      );
-    }
-    if (!context.mounted) return;
-    final l10n = context.l10n;
-    final code = await showDialog<String>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(l10n.reliableGroup_joinPaste),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          maxLines: 4,
-          decoration: InputDecoration(
-            hintText: l10n.reliableGroup_invitePasteHint,
-          ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(dialogContext),
+          child: Text(l10n.common_cancel),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(l10n.common_cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(dialogContext, controller.text),
-            child: Text(l10n.common_add),
-          ),
-        ],
-      ),
-    );
-    controller.dispose();
-    if (code != null && context.mounted) await _join(context, code);
-  }
+        FilledButton(
+          onPressed: () => Navigator.pop(dialogContext, controller.text),
+          child: Text(l10n.common_add),
+        ),
+      ],
+    ),
+  );
+  controller.dispose();
+  if (code != null && context.mounted) await _join(context, code);
+}
 
-  Future<void> _join(BuildContext context, String code) async {
-    final l10n = context.l10n;
-    final group = ReliableGroup.fromInviteCode(code);
-    if (group == null) {
-      showDismissibleSnackBar(
-        context,
-        content: Text(l10n.reliableGroup_invalidInvite),
-      );
-      return;
-    }
-    final result = await context.read<ReliableGroupService>().addGroup(group);
-    if (!context.mounted) return;
+Future<void> _join(BuildContext context, String code) async {
+  final l10n = context.l10n;
+  final service = context.read<ReliableGroupService>();
+  if (!service.isSupported) {
     showDismissibleSnackBar(
       context,
-      content: Text(switch (result) {
-        ReliableGroupAddResult.added => l10n.reliableGroup_joined(group.name),
-        ReliableGroupAddResult.notAMember => l10n.reliableGroup_notAMember,
-        ReliableGroupAddResult.noFreeChannelSlot =>
-          l10n.reliableGroup_noFreeChannel,
-      }),
+      content: Text(l10n.reliableGroup_unsupported),
     );
+    return;
   }
-}
-
-class _GroupTile extends StatelessWidget {
-  final ReliableGroup group;
-  final ReliableGroupService service;
-
-  const _GroupTile({required this.group, required this.service});
-
-  @override
-  Widget build(BuildContext context) {
-    final engine = service.engineFor(group.groupId);
-    final messages = engine?.messages ?? const [];
-    final last = messages.isEmpty ? null : messages.last;
-    final status = engine == null
-        ? null
-        : ReliableGroupStatus.of(context, group, engine);
-    return ListTile(
-      leading: CircleAvatar(
-        child: Icon(status?.icon ?? Icons.verified_user_outlined),
-      ),
-      title: Text(group.name),
-      subtitle: Text(
-        last == null
-            ? context.l10n.reliableGroup_noMessages
-            : '${memberName(context, group, last.author, engine!)}: '
-                  '${last.text}',
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
-      trailing: status == null
-          ? null
-          : Icon(Icons.circle, size: 12, color: status.color),
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ReliableGroupChatScreen(groupId: group.groupId),
-        ),
+  final group = ReliableGroup.fromInviteCode(code);
+  if (group == null) {
+    showDismissibleSnackBar(
+      context,
+      content: Text(l10n.reliableGroup_invalidInvite),
+    );
+    return;
+  }
+  final result = await service.addGroup(group);
+  if (!context.mounted) return;
+  if (result != ReliableGroupAddResult.added) {
+    showDismissibleSnackBar(
+      context,
+      content: Text(
+        result == ReliableGroupAddResult.noFreeChannelSlot
+            ? l10n.reliableGroup_noFreeChannel
+            : l10n.reliableGroup_notAMember,
       ),
     );
+    return;
   }
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => ReliableGroupChatScreen(groupId: group.groupId),
+    ),
+  );
 }
 
 class ReliableGroupCreateScreen extends StatefulWidget {

@@ -56,6 +56,15 @@ class ReliableGroupService extends ChangeNotifier {
 
   ReliableGroupEngine? engineFor(int groupId) => _engines[groupId];
 
+  /// The group bound to [channel]'s key, if any.
+  ReliableGroup? groupForChannel(Channel channel) {
+    if (channel.isEmpty) return null;
+    for (final g in _groups) {
+      if (g.channelPskHex == channel.pskHex) return g;
+    }
+    return null;
+  }
+
   /// The radio's channel slot holding [group]'s key, or null if none does.
   int? channelIndexFor(ReliableGroup group) {
     for (final channel in _connector.channels) {

@@ -13,6 +13,7 @@ import '../connector/meshcore_connector.dart';
 import '../l10n/l10n.dart';
 import '../services/app_settings_service.dart';
 import '../services/received_image_store.dart';
+import '../services/reliable_group_service.dart';
 import '../services/ui_view_state_service.dart';
 import '../models/channel.dart';
 import '../models/community.dart';
@@ -34,6 +35,7 @@ import 'channel_chat_screen.dart';
 import 'community_qr_scanner_screen.dart';
 import 'contacts_screen.dart';
 import 'map_screen.dart';
+import 'reliable_group_chat_screen.dart';
 import 'reliable_groups_screen.dart';
 import 'settings_screen.dart';
 
@@ -146,21 +148,6 @@ class _ChannelsScreenState extends State<ChannelsScreen>
                     ],
                   ),
                   onTap: () => _showManageCommunitiesDialog(context),
-                ),
-                PopupMenuItem(
-                  child: Row(
-                    children: [
-                      const Icon(Icons.verified_user_outlined),
-                      const SizedBox(width: 8),
-                      Text(menuContext.l10n.reliableGroup_title),
-                    ],
-                  ),
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ReliableGroupsScreen(),
-                    ),
-                  ),
                 ),
                 PopupMenuItem(
                   child: Row(
@@ -430,12 +417,36 @@ class _ChannelsScreenState extends State<ChannelsScreen>
     final messages = connector.getChannelMessages(channel);
     final lastMessage = messages.isNotEmpty ? messages.last : null;
     final lastMessageText = lastMessage?.text ?? '';
-    final lastPreview =
+    var lastPreview =
         lastMessageText.isNotEmpty &&
             GifHelper.parseGif(lastMessageText) != null
         ? context.l10n.chat_receivedGif
         : lastMessageText;
-    final lastTime = lastMessage?.timestamp;
+    var lastTime = lastMessage?.timestamp;
+
+    // A reliable group's channel carries no channel text: show and open the
+    // group instead, so messages get confirmations.
+    final reliableGroups = context.watch<ReliableGroupService>();
+    final reliableGroup = reliableGroups.groupForChannel(channel);
+    final reliableEngine = reliableGroup == null
+        ? null
+        : reliableGroups.engineFor(reliableGroup.groupId);
+    if (reliableGroup != null && reliableEngine != null) {
+      icon = Icons.verified_user;
+      iconColor = MeshPalette.signal;
+      subtitle = ReliableGroupStatus.of(
+        context,
+        reliableGroup,
+        reliableEngine,
+      ).label;
+      final groupMessages = reliableEngine.messages;
+      final last = groupMessages.isEmpty ? null : groupMessages.last;
+      lastPreview = last == null
+          ? ''
+          : '${memberName(context, reliableGroup, last.author, reliableEngine)}: '
+                '${last.text}';
+      lastTime = last?.timestamp;
+    }
 
     final channelLabel = channel.name.isEmpty
         ? context.l10n.channels_channelIndex(channel.index)
@@ -450,6 +461,16 @@ class _ChannelsScreenState extends State<ChannelsScreen>
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         onTap: () {
           HapticFeedback.selectionClick();
+          if (reliableGroup != null) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    ReliableGroupChatScreen(groupId: reliableGroup.groupId),
+              ),
+            );
+            return;
+          }
           final unread = connector.getUnreadCountForChannelIndex(channel.index);
           connector.markChannelRead(channel.index);
           Navigator.push(
@@ -848,6 +869,9 @@ class _ChannelsScreenState extends State<ChannelsScreen>
       return;
     }
     final hasPublicChannel = connector.channels.any((c) => c.isPublicChannel);
+    final reliableGroupsSupported = context
+        .read<ReliableGroupService>()
+        .isSupported;
     int? selectedOption;
     final nameController = TextEditingController();
     final pskController = TextEditingController();
@@ -868,6 +892,7 @@ class _ChannelsScreenState extends State<ChannelsScreen>
             required String title,
             required String subtitle,
             bool enabled = true,
+            VoidCallback? onTap,
           }) {
             final isSelected = selectedOption == optionIndex;
             final cardScheme = Theme.of(sheetContext).colorScheme;
@@ -877,14 +902,15 @@ class _ChannelsScreenState extends State<ChannelsScreen>
               borderColor: isSelected && enabled ? MeshPalette.blueLine : null,
               color: isSelected && enabled ? MeshPalette.blueBg : null,
               onTap: enabled
-                  ? () {
-                      setSheetState(() {
-                        selectedOption = optionIndex;
-                        nameController.clear();
-                        pskController.clear();
-                        hashtagController.clear();
-                      });
-                    }
+                  ? onTap ??
+                        () {
+                          setSheetState(() {
+                            selectedOption = optionIndex;
+                            nameController.clear();
+                            pskController.clear();
+                            hashtagController.clear();
+                          });
+                        }
                   : null,
               child: Row(
                 children: [
@@ -1526,6 +1552,28 @@ class _ChannelsScreenState extends State<ChannelsScreen>
                       ),
                       if (selectedOption == 4)
                         buildExpandedContent(_channelMessageStore)!,
+                      buildOptionCard(
+                        optionIndex: 6,
+                        icon: Icons.verified_user,
+                        title: sheetContext.l10n.reliableGroup_joinScan,
+                        subtitle: sheetContext.l10n.reliableGroup_joinDesc,
+                        enabled: reliableGroupsSupported,
+                        onTap: () {
+                          Navigator.pop(sheetContext);
+                          scanReliableGroupInvite(context);
+                        },
+                      ),
+                      buildOptionCard(
+                        optionIndex: 7,
+                        icon: Icons.content_paste,
+                        title: sheetContext.l10n.reliableGroup_joinPaste,
+                        subtitle: sheetContext.l10n.reliableGroup_joinDesc,
+                        enabled: reliableGroupsSupported,
+                        onTap: () {
+                          Navigator.pop(sheetContext);
+                          pasteReliableGroupInvite(context);
+                        },
+                      ),
                       SectionHeader(
                         sheetContext.l10n.channels_addSectionCreate,
                       ),
@@ -1538,6 +1586,24 @@ class _ChannelsScreenState extends State<ChannelsScreen>
                       ),
                       if (selectedOption == 0)
                         buildExpandedContent(_channelMessageStore)!,
+                      buildOptionCard(
+                        optionIndex: 8,
+                        icon: Icons.verified_user,
+                        title: sheetContext.l10n.reliableGroup_create,
+                        subtitle: reliableGroupsSupported
+                            ? sheetContext.l10n.reliableGroup_createDesc
+                            : sheetContext.l10n.reliableGroup_unsupported,
+                        enabled: reliableGroupsSupported,
+                        onTap: () {
+                          Navigator.pop(sheetContext);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const ReliableGroupCreateScreen(),
+                            ),
+                          );
+                        },
+                      ),
                       buildOptionCard(
                         optionIndex: 5,
                         icon: Icons.groups,

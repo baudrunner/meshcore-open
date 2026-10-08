@@ -1,8 +1,5 @@
 {
   "bg": [
-    "reliableGroup_title",
-    "reliableGroup_empty",
-    "reliableGroup_emptyHint",
     "reliableGroup_create",
     "reliableGroup_joinPaste",
     "reliableGroup_joinScan",
@@ -34,13 +31,12 @@
     "reliableGroup_you",
     "reliableGroup_leave",
     "reliableGroup_leaveConfirm",
-    "reliableGroup_noMessages"
+    "reliableGroup_noMessages",
+    "reliableGroup_createDesc",
+    "reliableGroup_joinDesc"
   ],
 
   "es": [
-    "reliableGroup_title",
-    "reliableGroup_empty",
-    "reliableGroup_emptyHint",
     "reliableGroup_create",
     "reliableGroup_joinPaste",
     "reliableGroup_joinScan",
@@ -72,13 +68,12 @@
     "reliableGroup_you",
     "reliableGroup_leave",
     "reliableGroup_leaveConfirm",
-    "reliableGroup_noMessages"
+    "reliableGroup_noMessages",
+    "reliableGroup_createDesc",
+    "reliableGroup_joinDesc"
   ],
 
   "fr": [
-    "reliableGroup_title",
-    "reliableGroup_empty",
-    "reliableGroup_emptyHint",
     "reliableGroup_create",
     "reliableGroup_joinPaste",
     "reliableGroup_joinScan",
@@ -110,13 +105,12 @@
     "reliableGroup_you",
     "reliableGroup_leave",
     "reliableGroup_leaveConfirm",
-    "reliableGroup_noMessages"
+    "reliableGroup_noMessages",
+    "reliableGroup_createDesc",
+    "reliableGroup_joinDesc"
   ],
 
   "hu": [
-    "reliableGroup_title",
-    "reliableGroup_empty",
-    "reliableGroup_emptyHint",
     "reliableGroup_create",
     "reliableGroup_joinPaste",
     "reliableGroup_joinScan",
@@ -148,13 +142,12 @@
     "reliableGroup_you",
     "reliableGroup_leave",
     "reliableGroup_leaveConfirm",
-    "reliableGroup_noMessages"
+    "reliableGroup_noMessages",
+    "reliableGroup_createDesc",
+    "reliableGroup_joinDesc"
   ],
 
   "it": [
-    "reliableGroup_title",
-    "reliableGroup_empty",
-    "reliableGroup_emptyHint",
     "reliableGroup_create",
     "reliableGroup_joinPaste",
     "reliableGroup_joinScan",
@@ -186,13 +179,12 @@
     "reliableGroup_you",
     "reliableGroup_leave",
     "reliableGroup_leaveConfirm",
-    "reliableGroup_noMessages"
+    "reliableGroup_noMessages",
+    "reliableGroup_createDesc",
+    "reliableGroup_joinDesc"
   ],
 
   "ja": [
-    "reliableGroup_title",
-    "reliableGroup_empty",
-    "reliableGroup_emptyHint",
     "reliableGroup_create",
     "reliableGroup_joinPaste",
     "reliableGroup_joinScan",
@@ -224,13 +216,12 @@
     "reliableGroup_you",
     "reliableGroup_leave",
     "reliableGroup_leaveConfirm",
-    "reliableGroup_noMessages"
+    "reliableGroup_noMessages",
+    "reliableGroup_createDesc",
+    "reliableGroup_joinDesc"
   ],
 
   "ko": [
-    "reliableGroup_title",
-    "reliableGroup_empty",
-    "reliableGroup_emptyHint",
     "reliableGroup_create",
     "reliableGroup_joinPaste",
     "reliableGroup_joinScan",
@@ -262,13 +253,12 @@
     "reliableGroup_you",
     "reliableGroup_leave",
     "reliableGroup_leaveConfirm",
-    "reliableGroup_noMessages"
+    "reliableGroup_noMessages",
+    "reliableGroup_createDesc",
+    "reliableGroup_joinDesc"
   ],
 
   "nl": [
-    "reliableGroup_title",
-    "reliableGroup_empty",
-    "reliableGroup_emptyHint",
     "reliableGroup_create",
     "reliableGroup_joinPaste",
     "reliableGroup_joinScan",
@@ -300,13 +290,12 @@
     "reliableGroup_you",
     "reliableGroup_leave",
     "reliableGroup_leaveConfirm",
-    "reliableGroup_noMessages"
+    "reliableGroup_noMessages",
+    "reliableGroup_createDesc",
+    "reliableGroup_joinDesc"
   ],
 
   "pl": [
-    "reliableGroup_title",
-    "reliableGroup_empty",
-    "reliableGroup_emptyHint",
     "reliableGroup_create",
     "reliableGroup_joinPaste",
     "reliableGroup_joinScan",
@@ -338,13 +327,12 @@
     "reliableGroup_you",
     "reliableGroup_leave",
     "reliableGroup_leaveConfirm",
-    "reliableGroup_noMessages"
+    "reliableGroup_noMessages",
+    "reliableGroup_createDesc",
+    "reliableGroup_joinDesc"
   ],
 
   "pt": [
-    "reliableGroup_title",
-    "reliableGroup_empty",
-    "reliableGroup_emptyHint",
     "reliableGroup_create",
     "reliableGroup_joinPaste",
     "reliableGroup_joinScan",
@@ -376,13 +364,12 @@
     "reliableGroup_you",
     "reliableGroup_leave",
     "reliableGroup_leaveConfirm",
-    "reliableGroup_noMessages"
+    "reliableGroup_noMessages",
+    "reliableGroup_createDesc",
+    "reliableGroup_joinDesc"
   ],
 
   "ru": [
-    "reliableGroup_title",
-    "reliableGroup_empty",
-    "reliableGroup_emptyHint",
     "reliableGroup_create",
     "reliableGroup_joinPaste",
     "reliableGroup_joinScan",
@@ -414,13 +401,12 @@
     "reliableGroup_you",
     "reliableGroup_leave",
     "reliableGroup_leaveConfirm",
-    "reliableGroup_noMessages"
+    "reliableGroup_noMessages",
+    "reliableGroup_createDesc",
+    "reliableGroup_joinDesc"
   ],
 
   "sk": [
-    "reliableGroup_title",
-    "reliableGroup_empty",
-    "reliableGroup_emptyHint",
     "reliableGroup_create",
     "reliableGroup_joinPaste",
     "reliableGroup_joinScan",
@@ -452,13 +438,12 @@
     "reliableGroup_you",
     "reliableGroup_leave",
     "reliableGroup_leaveConfirm",
-    "reliableGroup_noMessages"
+    "reliableGroup_noMessages",
+    "reliableGroup_createDesc",
+    "reliableGroup_joinDesc"
   ],
 
   "sl": [
-    "reliableGroup_title",
-    "reliableGroup_empty",
-    "reliableGroup_emptyHint",
     "reliableGroup_create",
     "reliableGroup_joinPaste",
     "reliableGroup_joinScan",
@@ -490,13 +475,12 @@
     "reliableGroup_you",
     "reliableGroup_leave",
     "reliableGroup_leaveConfirm",
-    "reliableGroup_noMessages"
+    "reliableGroup_noMessages",
+    "reliableGroup_createDesc",
+    "reliableGroup_joinDesc"
   ],
 
   "sv": [
-    "reliableGroup_title",
-    "reliableGroup_empty",
-    "reliableGroup_emptyHint",
     "reliableGroup_create",
     "reliableGroup_joinPaste",
     "reliableGroup_joinScan",
@@ -528,13 +512,12 @@
     "reliableGroup_you",
     "reliableGroup_leave",
     "reliableGroup_leaveConfirm",
-    "reliableGroup_noMessages"
+    "reliableGroup_noMessages",
+    "reliableGroup_createDesc",
+    "reliableGroup_joinDesc"
   ],
 
   "uk": [
-    "reliableGroup_title",
-    "reliableGroup_empty",
-    "reliableGroup_emptyHint",
     "reliableGroup_create",
     "reliableGroup_joinPaste",
     "reliableGroup_joinScan",
@@ -566,13 +549,12 @@
     "reliableGroup_you",
     "reliableGroup_leave",
     "reliableGroup_leaveConfirm",
-    "reliableGroup_noMessages"
+    "reliableGroup_noMessages",
+    "reliableGroup_createDesc",
+    "reliableGroup_joinDesc"
   ],
 
   "zh": [
-    "reliableGroup_title",
-    "reliableGroup_empty",
-    "reliableGroup_emptyHint",
     "reliableGroup_create",
     "reliableGroup_joinPaste",
     "reliableGroup_joinScan",
@@ -604,6 +586,8 @@
     "reliableGroup_you",
     "reliableGroup_leave",
     "reliableGroup_leaveConfirm",
-    "reliableGroup_noMessages"
+    "reliableGroup_noMessages",
+    "reliableGroup_createDesc",
+    "reliableGroup_joinDesc"
   ]
 }

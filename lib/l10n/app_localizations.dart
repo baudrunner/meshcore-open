@@ -9298,40 +9298,22 @@ abstract class AppLocalizations {
   /// **'Over 158 bytes: sent at most {count} times'**
   String chat_longMessageRetryNote(int count);
 
-  /// No description provided for @reliableGroup_title.
-  ///
-  /// In en, this message translates to:
-  /// **'Reliable groups'**
-  String get reliableGroup_title;
-
-  /// No description provided for @reliableGroup_empty.
-  ///
-  /// In en, this message translates to:
-  /// **'No reliable groups yet'**
-  String get reliableGroup_empty;
-
-  /// No description provided for @reliableGroup_emptyHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Every member confirms every message, and missing messages are resent automatically.'**
-  String get reliableGroup_emptyHint;
-
   /// No description provided for @reliableGroup_create.
   ///
   /// In en, this message translates to:
-  /// **'Create group'**
+  /// **'Create reliable group'**
   String get reliableGroup_create;
 
   /// No description provided for @reliableGroup_joinPaste.
   ///
   /// In en, this message translates to:
-  /// **'Paste invite'**
+  /// **'Join reliable group (paste invite)'**
   String get reliableGroup_joinPaste;
 
   /// No description provided for @reliableGroup_joinScan.
   ///
   /// In en, this message translates to:
-  /// **'Scan invite QR code'**
+  /// **'Join reliable group (scan QR)'**
   String get reliableGroup_joinScan;
 
   /// No description provided for @reliableGroup_name.
@@ -9507,6 +9489,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No messages yet'**
   String get reliableGroup_noMessages;
+
+  /// No description provided for @reliableGroup_createDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Private group in which every member confirms every message; missed messages are resent automatically'**
+  String get reliableGroup_createDesc;
+
+  /// No description provided for @reliableGroup_joinDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Join with the invite from the group\'s creator'**
+  String get reliableGroup_joinDesc;
 }
 
 class _AppLocalizationsDelegate

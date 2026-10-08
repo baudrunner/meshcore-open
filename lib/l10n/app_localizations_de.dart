@@ -5496,23 +5496,15 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get reliableGroup_title => 'Gesicherte Gruppen';
+  String get reliableGroup_create => 'Gesicherte Gruppe erstellen';
 
   @override
-  String get reliableGroup_empty => 'Noch keine gesicherten Gruppen';
+  String get reliableGroup_joinPaste =>
+      'Gesicherter Gruppe beitreten (Einladung einfügen)';
 
   @override
-  String get reliableGroup_emptyHint =>
-      'Jedes Mitglied bestätigt jede Nachricht, fehlende Nachrichten werden automatisch nachgeliefert.';
-
-  @override
-  String get reliableGroup_create => 'Gruppe erstellen';
-
-  @override
-  String get reliableGroup_joinPaste => 'Einladung einfügen';
-
-  @override
-  String get reliableGroup_joinScan => 'Einladungs-QR-Code scannen';
+  String get reliableGroup_joinScan =>
+      'Gesicherter Gruppe beitreten (QR scannen)';
 
   @override
   String get reliableGroup_name => 'Gruppenname';
@@ -5619,4 +5611,12 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get reliableGroup_noMessages => 'Noch keine Nachrichten';
+
+  @override
+  String get reliableGroup_createDesc =>
+      'Private Gruppe, in der jedes Mitglied jede Nachricht bestätigt; Verpasstes wird automatisch nachgeliefert';
+
+  @override
+  String get reliableGroup_joinDesc =>
+      'Mit der Einladung vom Ersteller der Gruppe beitreten';
 }
