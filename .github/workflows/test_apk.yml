@@ -28,13 +28,28 @@ jobs:
         with:
           channel: "stable"
           cache: true
-      # Updates only install over an APK signed with the same key, so keep the
-      # generated debug keystore between runs.
+      # Updates only install over an APK signed with the same key, so the test
+      # build signs with its own keystore, created once and kept in the cache.
       - name: Restore signing key
         uses: actions/cache@v4
         with:
-          path: ~/.android/debug.keystore
-          key: test-apk-debug-keystore
+          path: ~/test-signing
+          key: test-apk-signing-v2
+      - name: Configure signing
+        run: |
+          mkdir -p ~/test-signing
+          if [ ! -f ~/test-signing/test.jks ]; then
+            keytool -genkeypair -v -keystore ~/test-signing/test.jks \
+              -storepass testbuild -keypass testbuild -alias test \
+              -keyalg RSA -keysize 2048 -validity 10000 \
+              -dname "CN=MeshCore Gruppen Test"
+          fi
+          cat > android/key.properties <<PROPS
+          storeFile=$HOME/test-signing/test.jks
+          storePassword=testbuild
+          keyAlias=test
+          keyPassword=testbuild
+          PROPS
       # A separate app id and name, so the test build installs next to an
       # existing MeshCore Open instead of replacing it.
       - name: Rename test app
@@ -50,9 +65,12 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           cp build/app/outputs/flutter-apk/app-release.apk meshcore-gruppen.apk
+          # Shown in the notes: an unchanged value means updates install in place.
+          SIGNATURE=$(keytool -list -v -keystore ~/test-signing/test.jks \
+            -storepass testbuild -alias test | grep -m1 'SHA256:' | awk '{print $2}' | cut -c1-23)
           gh release delete test-build --cleanup-tag --yes || true
           gh release create test-build meshcore-gruppen.apk \
             --prerelease \
             --target "$GITHUB_SHA" \
             --title "Testversion Gesicherte Gruppen" \
-            --notes "Stand: ${GITHUB_SHA::7} vom $(date -u '+%d.%m.%Y %H:%M') UTC. Auf dem Handy meshcore-gruppen.apk antippen und installieren."
+            --notes "Stand: ${GITHUB_SHA::7} vom $(date -u '+%d.%m.%Y %H:%M') UTC. Auf dem Handy meshcore-gruppen.apk antippen und installieren. Signatur: ${SIGNATURE}"
