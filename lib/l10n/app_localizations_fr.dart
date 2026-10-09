@@ -5645,4 +5645,63 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get reliableGroup_deliveryLost =>
       'Lost: not confirmed by everyone within 12 hours';
+
+  @override
+  String get reliableGroup_traffic => 'Radio traffic';
+
+  @override
+  String get reliableGroup_trafficHint =>
+      'Packets this phone sent and received for this group since the app started.';
+
+  @override
+  String get reliableGroup_trafficLast10m => '10 min';
+
+  @override
+  String get reliableGroup_trafficLast1h => '1 h';
+
+  @override
+  String get reliableGroup_trafficLast24h => '24 h';
+
+  @override
+  String get reliableGroup_trafficOwn => 'Own messages';
+
+  @override
+  String get reliableGroup_trafficStatus => 'Confirmations and queries';
+
+  @override
+  String get reliableGroup_trafficRepair => 'Resent messages';
+
+  @override
+  String get reliableGroup_trafficSent => 'Sent in total';
+
+  @override
+  String get reliableGroup_trafficReceived => 'Received';
+
+  @override
+  String get reliableGroup_trafficAirtime => 'Airtime (at least)';
+
+  @override
+  String reliableGroup_trafficDuty(String percent) {
+    return 'Share of the last hour on air: $percent';
+  }
+
+  @override
+  String reliableGroup_trafficLimit(int count, int limit) {
+    return 'Automatic packets in the last hour: $count of $limit';
+  }
+
+  @override
+  String get reliableGroup_pause => 'Pause syncing';
+
+  @override
+  String get reliableGroup_resume => 'Resume syncing';
+
+  @override
+  String get reliableGroup_pausedBanner =>
+      'Automatic syncing is paused. Your messages are still sent, confirmations and resends are not.';
+
+  @override
+  String reliableGroup_throttledBanner(String time) {
+    return 'Traffic limit reached: automatic syncing waits until $time.';
+  }
 }

@@ -7,10 +7,13 @@ import '../models/channel.dart';
 import '../models/reliable_group.dart';
 import '../storage/reliable_group_store.dart';
 import '../utils/app_logger.dart';
+import '../utils/lora_airtime.dart'
+    show areLoRaParamsValid, loraTimeOnAir, normalizeCodingRate;
 import 'image_chunk_transport.dart'
     show parseChannelDataFrame, respCodeChannelDataRecv;
 import 'reliable_group_codec.dart';
 import 'reliable_group_engine.dart';
+import 'reliable_group_traffic.dart';
 
 enum ReliableGroupAddResult { added, notAMember, noFreeChannelSlot }
 
@@ -29,6 +32,8 @@ class ReliableGroupService extends ChangeNotifier {
   ReliableGroupStore? _store;
   List<ReliableGroup> _groups = const [];
   final Map<int, ReliableGroupEngine> _engines = {};
+  final Map<int, ReliableGroupTrafficLog> _traffic = {};
+  final Set<int> _paused = {};
   final Set<int> _dirty = {};
 
   bool _wasConnected = false;
@@ -56,6 +61,32 @@ class ReliableGroupService extends ChangeNotifier {
   }
 
   ReliableGroupEngine? engineFor(int groupId) => _engines[groupId];
+
+  /// Packets this phone sent and heard in [groupId] since the app started.
+  ReliableGroupTrafficLog trafficFor(int groupId) =>
+      _traffic.putIfAbsent(groupId, ReliableGroupTrafficLog.new);
+
+  /// Whether automatic traffic (acks, repairs, probes) of [groupId] is paused
+  /// by the user. Own messages are still sent and others are still received.
+  bool isPaused(int groupId) => _paused.contains(groupId);
+
+  /// Whether [groupId] hit its automatic-traffic limit for the last hour.
+  bool isThrottled(int groupId) =>
+      trafficFor(groupId).isOverLimit(DateTime.now());
+
+  Future<void> setPaused(int groupId, bool paused) async {
+    if (paused == isPaused(groupId)) return;
+    if (paused) {
+      _paused.add(groupId);
+    } else {
+      _paused.remove(groupId);
+      // Tell the others where we stand; anything missed is caught up.
+      _engines[groupId]?.announce(DateTime.now());
+    }
+    await _store?.savePaused(groupId, paused);
+    notifyListeners();
+    _scheduleWake();
+  }
 
   /// The group bound to [channel]'s key, if any.
   ReliableGroup? groupForChannel(Channel channel) {
@@ -115,6 +146,8 @@ class ReliableGroupService extends ChangeNotifier {
         if (g.groupId != groupId) g,
     ];
     _engines.remove(groupId);
+    _traffic.remove(groupId);
+    _paused.remove(groupId);
     _dirty.remove(groupId);
     await _store?.saveGroups(_groups);
     await _store?.deleteState(groupId);
@@ -165,6 +198,13 @@ class ReliableGroupService extends ChangeNotifier {
     _store = store;
     _groups = store.loadGroups();
     _engines.clear();
+    _traffic.clear();
+    _paused
+      ..clear()
+      ..addAll([
+        for (final g in _groups)
+          if (store.loadPaused(g.groupId)) g.groupId,
+      ]);
     for (final group in _groups) {
       final self = group.indexOf(publicKeyHex);
       if (self == null) continue;
@@ -213,6 +253,13 @@ class ReliableGroupService extends ChangeNotifier {
       final engine = _engines[group.groupId];
       if (engine == null) continue;
       final stored = engine.receive(data.payload, now);
+      trafficFor(group.groupId).record(
+        ReliableGroupTrafficEntry(
+          at: now,
+          kind: ReliableGroupTrafficKind.received,
+          bytes: data.payload.length,
+        ),
+      );
       _dirty.add(group.groupId);
       changed = true;
       if (stored != null && stored.author != engine.config.selfIndex) {
@@ -244,15 +291,30 @@ class ReliableGroupService extends ChangeNotifier {
   void _scheduleWake() {
     _wakeTimer?.cancel();
     if (!_connector.isConnected || _pumping) return;
+    final now = DateTime.now();
     DateTime? earliest;
-    for (final engine in _engines.values) {
-      final wake = engine.nextWakeAt;
-      if (wake != null && (earliest == null || wake.isBefore(earliest))) {
-        earliest = wake;
+    void consider(DateTime? t) {
+      if (t != null && (earliest == null || t.isBefore(earliest!))) {
+        earliest = t;
       }
     }
-    if (earliest == null) return;
-    final delay = earliest.difference(DateTime.now());
+
+    for (final entry in _engines.entries) {
+      final engine = entry.value;
+      if (engine.hasOutbox) consider(now);
+      if (isPaused(entry.key)) continue;
+      final freesAt = trafficFor(entry.key).limitFreesAt(now);
+      if (freesAt != null) {
+        // Throttled: automatic traffic waits until the limit frees up.
+        final wake = engine.nextWakeAt;
+        if (wake != null) consider(wake.isAfter(freesAt) ? wake : freesAt);
+        continue;
+      }
+      consider(engine.nextWakeAt);
+    }
+    final wake = earliest;
+    if (wake == null) return;
+    final delay = wake.difference(now);
     _wakeTimer = Timer(delay.isNegative ? Duration.zero : delay, _pump);
   }
 
@@ -263,23 +325,38 @@ class ReliableGroupService extends ChangeNotifier {
       for (final group in List.of(_groups)) {
         final engine = _engines[group.groupId];
         if (engine == null) continue;
+        final log = trafficFor(group.groupId);
+        final now = DateTime.now();
+        final own = engine.takeOutbox();
         final wake = engine.nextWakeAt;
-        if (wake == null || wake.isAfter(DateTime.now())) continue;
-        final blobs = engine.poll(DateTime.now());
+        final automatic =
+            !isPaused(group.groupId) &&
+                !log.isOverLimit(now) &&
+                wake != null &&
+                !wake.isAfter(now)
+            ? engine.poll(now)
+            : const <Uint8List>[];
         final channelIndex = channelIndexFor(group);
         // What cannot go out now is not lost for good: after reconnecting,
         // the hello status reveals our frontier and the others ask for it.
         if (channelIndex == null) continue;
-        for (final blob in blobs) {
-          if (!_connector.isConnected) break;
-          try {
-            await _connector.sendReliableGroupBlob(
-              blob,
-              channelIndex: channelIndex,
-            );
-          } on Object catch (e) {
-            appLogger.warn('Reliable group send failed: $e');
-          }
+        for (final blob in own) {
+          await _transmit(
+            blob,
+            channelIndex,
+            log,
+            ReliableGroupTrafficKind.ownMessage,
+          );
+        }
+        for (final blob in automatic) {
+          // Re-check per packet: one poll can yield several repairs.
+          if (log.isOverLimit(DateTime.now())) break;
+          final kind =
+              ReliableGroupPacket.decode(blob)?.kind ==
+                  ReliableGroupPacketKind.message
+              ? ReliableGroupTrafficKind.repair
+              : ReliableGroupTrafficKind.status;
+          await _transmit(blob, channelIndex, log, kind);
         }
       }
     } finally {
@@ -287,6 +364,54 @@ class ReliableGroupService extends ChangeNotifier {
     }
     notifyListeners();
     _scheduleWake();
+  }
+
+  Future<void> _transmit(
+    Uint8List blob,
+    int channelIndex,
+    ReliableGroupTrafficLog log,
+    ReliableGroupTrafficKind kind,
+  ) async {
+    if (!_connector.isConnected) return;
+    try {
+      final sent = await _connector.sendReliableGroupBlob(
+        blob,
+        channelIndex: channelIndex,
+      );
+      if (!sent) return;
+      log.record(
+        ReliableGroupTrafficEntry(
+          at: DateTime.now(),
+          kind: kind,
+          bytes: blob.length,
+          airtime: _airtime(blob.length),
+        ),
+      );
+    } on Object catch (e) {
+      appLogger.warn('Reliable group send failed: $e');
+    }
+  }
+
+  /// Estimated airtime of a [bytes] GRP_DATA payload with the current radio
+  /// settings. A lower bound: the MeshCore packet header is not counted.
+  Duration? _airtime(int bytes) {
+    final rawCr = _connector.currentCr;
+    final cr = rawCr == null ? null : normalizeCodingRate(rawCr);
+    final sf = _connector.currentSf;
+    final bw = _connector.currentBwHz;
+    if (!areLoRaParamsValid(
+      spreadingFactor: sf,
+      bandwidthHz: bw,
+      codingRate: cr,
+    )) {
+      return null;
+    }
+    return loraTimeOnAir(
+      payloadBytes: bytes,
+      spreadingFactor: sf!,
+      bandwidthHz: bw!,
+      codingRate: cr!,
+    );
   }
 
   Future<bool> _replyFromNotification(int channelIndex, String text) async {

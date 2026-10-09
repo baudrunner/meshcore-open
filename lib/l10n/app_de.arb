@@ -3225,5 +3225,22 @@
   "reliableGroup_deliveryQueued": "Wartet auf das Funkgerät",
   "reliableGroup_deliverySent": "Gesendet, warte auf Bestätigungen",
   "reliableGroup_deliveryDelivered": "Von allen empfangen",
-  "reliableGroup_deliveryLost": "Verloren: nicht innerhalb von 12 Stunden von allen bestätigt"
+  "reliableGroup_deliveryLost": "Verloren: nicht innerhalb von 12 Stunden von allen bestätigt",
+  "reliableGroup_traffic": "Funkverkehr",
+  "reliableGroup_trafficHint": "Pakete, die dieses Handy für diese Gruppe seit dem App-Start gesendet und empfangen hat.",
+  "reliableGroup_trafficLast10m": "10 Min.",
+  "reliableGroup_trafficLast1h": "1 Std.",
+  "reliableGroup_trafficLast24h": "24 Std.",
+  "reliableGroup_trafficOwn": "Eigene Nachrichten",
+  "reliableGroup_trafficStatus": "Bestätigungen und Nachfragen",
+  "reliableGroup_trafficRepair": "Nachlieferungen",
+  "reliableGroup_trafficSent": "Gesendet gesamt",
+  "reliableGroup_trafficReceived": "Empfangen",
+  "reliableGroup_trafficAirtime": "Sendezeit (mindestens)",
+  "reliableGroup_trafficDuty": "Anteil der letzten Stunde auf Sendung: {percent}",
+  "reliableGroup_trafficLimit": "Automatische Pakete in der letzten Stunde: {count} von {limit}",
+  "reliableGroup_pause": "Abgleich pausieren",
+  "reliableGroup_resume": "Abgleich fortsetzen",
+  "reliableGroup_pausedBanner": "Automatischer Abgleich pausiert. Deine Nachrichten gehen raus, Bestätigungen und Nachlieferungen nicht.",
+  "reliableGroup_throttledBanner": "Verkehrslimit erreicht: Der automatische Abgleich wartet bis {time}."
 }

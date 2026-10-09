@@ -399,6 +399,19 @@ class ReliableGroupEngine {
     return stored;
   }
 
+  /// True while own messages wait to be handed out by [takeOutbox] or [poll].
+  bool get hasOutbox => _outbox.isNotEmpty;
+
+  /// Hands out only the own messages composed since the last call, leaving
+  /// automatic traffic (acks, repairs, probes) scheduled. Lets the caller
+  /// keep sending what the user typed while automatic traffic is paused.
+  List<Uint8List> takeOutbox() {
+    final out = List<Uint8List>.of(_outbox);
+    _outbox.clear();
+    _unsentOwn.clear();
+    return out;
+  }
+
   /// Returns every blob that is due at [now]; transmit them in order.
   List<Uint8List> poll(DateTime now) {
     final out = <Uint8List>[..._outbox];

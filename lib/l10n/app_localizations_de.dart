@@ -5635,4 +5635,63 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get reliableGroup_deliveryLost =>
       'Verloren: nicht innerhalb von 12 Stunden von allen bestätigt';
+
+  @override
+  String get reliableGroup_traffic => 'Funkverkehr';
+
+  @override
+  String get reliableGroup_trafficHint =>
+      'Pakete, die dieses Handy für diese Gruppe seit dem App-Start gesendet und empfangen hat.';
+
+  @override
+  String get reliableGroup_trafficLast10m => '10 Min.';
+
+  @override
+  String get reliableGroup_trafficLast1h => '1 Std.';
+
+  @override
+  String get reliableGroup_trafficLast24h => '24 Std.';
+
+  @override
+  String get reliableGroup_trafficOwn => 'Eigene Nachrichten';
+
+  @override
+  String get reliableGroup_trafficStatus => 'Bestätigungen und Nachfragen';
+
+  @override
+  String get reliableGroup_trafficRepair => 'Nachlieferungen';
+
+  @override
+  String get reliableGroup_trafficSent => 'Gesendet gesamt';
+
+  @override
+  String get reliableGroup_trafficReceived => 'Empfangen';
+
+  @override
+  String get reliableGroup_trafficAirtime => 'Sendezeit (mindestens)';
+
+  @override
+  String reliableGroup_trafficDuty(String percent) {
+    return 'Anteil der letzten Stunde auf Sendung: $percent';
+  }
+
+  @override
+  String reliableGroup_trafficLimit(int count, int limit) {
+    return 'Automatische Pakete in der letzten Stunde: $count von $limit';
+  }
+
+  @override
+  String get reliableGroup_pause => 'Abgleich pausieren';
+
+  @override
+  String get reliableGroup_resume => 'Abgleich fortsetzen';
+
+  @override
+  String get reliableGroup_pausedBanner =>
+      'Automatischer Abgleich pausiert. Deine Nachrichten gehen raus, Bestätigungen und Nachlieferungen nicht.';
+
+  @override
+  String reliableGroup_throttledBanner(String time) {
+    return 'Verkehrslimit erreicht: Der automatische Abgleich wartet bis $time.';
+  }
 }

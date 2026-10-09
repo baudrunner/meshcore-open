@@ -12,6 +12,7 @@ import '../models/reliable_group.dart';
 import '../services/reliable_group_codec.dart';
 import '../services/reliable_group_engine.dart';
 import '../services/reliable_group_service.dart';
+import '../services/reliable_group_traffic.dart';
 import '../theme/mesh_theme.dart';
 import '../utils/disconnect_navigation_mixin.dart';
 import '../widgets/adaptive_app_bar_title.dart';
@@ -132,6 +133,9 @@ class _ReliableGroupChatScreenState extends State<ReliableGroupChatScreen>
     final l10n = context.l10n;
     final status = ReliableGroupStatus.of(context, group, engine);
     final channelMissing = service.channelIndexFor(group) == null;
+    final throttledUntil = service
+        .trafficFor(group.groupId)
+        .limitFreesAt(DateTime.now());
     final messages = engine.messages.reversed.toList();
 
     return Scaffold(
@@ -149,6 +153,21 @@ class _ReliableGroupChatScreenState extends State<ReliableGroupChatScreen>
               PopupMenuItem(
                 child: Text(menuContext.l10n.reliableGroup_invite),
                 onTap: () => showReliableGroupInvite(context, group),
+              ),
+              PopupMenuItem(
+                child: Text(menuContext.l10n.reliableGroup_traffic),
+                onTap: () => _showTraffic(context, group),
+              ),
+              PopupMenuItem(
+                child: Text(
+                  service.isPaused(group.groupId)
+                      ? menuContext.l10n.reliableGroup_resume
+                      : menuContext.l10n.reliableGroup_pause,
+                ),
+                onTap: () => service.setPaused(
+                  group.groupId,
+                  !service.isPaused(group.groupId),
+                ),
               ),
               PopupMenuItem(
                 child: Text(menuContext.l10n.reliableGroup_leave),
@@ -175,6 +194,32 @@ class _ReliableGroupChatScreenState extends State<ReliableGroupChatScreen>
             MaterialBanner(
               content: Text(l10n.reliableGroup_channelMissing),
               actions: const [SizedBox.shrink()],
+            ),
+          if (service.isPaused(group.groupId))
+            MaterialBanner(
+              leading: const Icon(Icons.pause_circle, color: MeshPalette.warn),
+              content: Text(l10n.reliableGroup_pausedBanner),
+              actions: [
+                TextButton(
+                  onPressed: () => service.setPaused(group.groupId, false),
+                  child: Text(l10n.reliableGroup_resume),
+                ),
+              ],
+            )
+          else if (throttledUntil != null)
+            MaterialBanner(
+              leading: const Icon(Icons.speed, color: MeshPalette.warn),
+              content: Text(
+                l10n.reliableGroup_throttledBanner(
+                  TimeOfDay.fromDateTime(throttledUntil).format(context),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => _showTraffic(context, group),
+                  child: Text(l10n.reliableGroup_traffic),
+                ),
+              ],
             ),
           Expanded(
             child: messages.isEmpty
@@ -291,6 +336,24 @@ class _ReliableGroupChatScreenState extends State<ReliableGroupChatScreen>
             ),
           );
         },
+      ),
+    );
+  }
+
+  void _showTraffic(BuildContext context, ReliableGroup group) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => Consumer<ReliableGroupService>(
+        builder: (context, service, _) => _TrafficSheet(
+          group: group,
+          log: service.trafficFor(group.groupId),
+          paused: service.isPaused(group.groupId),
+          onTogglePause: () => service.setPaused(
+            group.groupId,
+            !service.isPaused(group.groupId),
+          ),
+        ),
       ),
     );
   }
@@ -511,6 +574,154 @@ class _DeliveryBadge extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _TrafficSheet extends StatelessWidget {
+  final ReliableGroup group;
+  final ReliableGroupTrafficLog log;
+  final bool paused;
+  final VoidCallback onTogglePause;
+
+  const _TrafficSheet({
+    required this.group,
+    required this.log,
+    required this.paused,
+    required this.onTogglePause,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final now = DateTime.now();
+    final windows = [
+      (l10n.reliableGroup_trafficLast10m, const Duration(minutes: 10)),
+      (l10n.reliableGroup_trafficLast1h, const Duration(hours: 1)),
+      (l10n.reliableGroup_trafficLast24h, const Duration(hours: 24)),
+    ];
+    final summaries = [for (final w in windows) log.summarize(w.$2, now)];
+    final lastHour = summaries[1];
+    final automatic = log.automaticInWindow(now);
+    final overLimit = automatic >= log.automaticLimit;
+
+    TableRow row(
+      String label,
+      String Function(ReliableGroupTrafficSummary) f, {
+      bool bold = false,
+    }) {
+      final style = bold
+          ? theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)
+          : theme.textTheme.bodyMedium;
+      return TableRow(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            child: Text(label, style: style),
+          ),
+          for (final s in summaries)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: Text(f(s), style: style, textAlign: TextAlign.end),
+            ),
+        ],
+      );
+    }
+
+    String airtime(Duration? d) => d == null
+        ? l10n.common_notAvailable
+        : '${(d.inMilliseconds / 1000).toStringAsFixed(1)} s';
+
+    final hourAirtime = lastHour.sentAirtime;
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '${l10n.reliableGroup_traffic}: ${group.name}',
+              style: theme.textTheme.titleMedium,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              l10n.reliableGroup_trafficHint,
+              style: theme.textTheme.bodySmall,
+            ),
+            const SizedBox(height: 12),
+            Table(
+              columnWidths: const {0: FlexColumnWidth(2.4)},
+              children: [
+                TableRow(
+                  children: [
+                    const SizedBox.shrink(),
+                    for (final w in windows)
+                      Text(
+                        w.$1,
+                        style: theme.textTheme.labelMedium,
+                        textAlign: TextAlign.end,
+                      ),
+                  ],
+                ),
+                row(
+                  l10n.reliableGroup_trafficOwn,
+                  (s) => '${s.count(ReliableGroupTrafficKind.ownMessage)}',
+                ),
+                row(
+                  l10n.reliableGroup_trafficStatus,
+                  (s) => '${s.count(ReliableGroupTrafficKind.status)}',
+                ),
+                row(
+                  l10n.reliableGroup_trafficRepair,
+                  (s) => '${s.count(ReliableGroupTrafficKind.repair)}',
+                ),
+                row(
+                  l10n.reliableGroup_trafficSent,
+                  (s) => '${s.sentPackets}',
+                  bold: true,
+                ),
+                row(
+                  l10n.reliableGroup_trafficReceived,
+                  (s) => '${s.count(ReliableGroupTrafficKind.received)}',
+                ),
+                row(
+                  l10n.reliableGroup_trafficAirtime,
+                  (s) => airtime(s.sentAirtime),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            if (hourAirtime != null)
+              Text(
+                l10n.reliableGroup_trafficDuty(
+                  '${(hourAirtime.inMilliseconds / 36000).toStringAsFixed(2)} %',
+                ),
+              ),
+            const SizedBox(height: 4),
+            Text(
+              l10n.reliableGroup_trafficLimit(automatic, log.automaticLimit),
+              style: TextStyle(color: overLimit ? MeshPalette.alert : null),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: paused
+                  ? FilledButton.icon(
+                      icon: const Icon(Icons.play_arrow),
+                      label: Text(l10n.reliableGroup_resume),
+                      onPressed: onTogglePause,
+                    )
+                  : OutlinedButton.icon(
+                      icon: const Icon(Icons.pause),
+                      label: Text(l10n.reliableGroup_pause),
+                      onPressed: onTogglePause,
+                    ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

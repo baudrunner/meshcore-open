@@ -3187,5 +3187,46 @@
   "reliableGroup_deliveryQueued": "Waiting for the radio",
   "reliableGroup_deliverySent": "Sent, waiting for confirmations",
   "reliableGroup_deliveryDelivered": "Received by everyone",
-  "reliableGroup_deliveryLost": "Lost: not confirmed by everyone within 12 hours"
+  "reliableGroup_deliveryLost": "Lost: not confirmed by everyone within 12 hours",
+  "reliableGroup_traffic": "Radio traffic",
+  "reliableGroup_trafficHint": "Packets this phone sent and received for this group since the app started.",
+  "reliableGroup_trafficLast10m": "10 min",
+  "reliableGroup_trafficLast1h": "1 h",
+  "reliableGroup_trafficLast24h": "24 h",
+  "reliableGroup_trafficOwn": "Own messages",
+  "reliableGroup_trafficStatus": "Confirmations and queries",
+  "reliableGroup_trafficRepair": "Resent messages",
+  "reliableGroup_trafficSent": "Sent in total",
+  "reliableGroup_trafficReceived": "Received",
+  "reliableGroup_trafficAirtime": "Airtime (at least)",
+  "reliableGroup_trafficDuty": "Share of the last hour on air: {percent}",
+  "@reliableGroup_trafficDuty": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "reliableGroup_trafficLimit": "Automatic packets in the last hour: {count} of {limit}",
+  "@reliableGroup_trafficLimit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "reliableGroup_pause": "Pause syncing",
+  "reliableGroup_resume": "Resume syncing",
+  "reliableGroup_pausedBanner": "Automatic syncing is paused. Your messages are still sent, confirmations and resends are not.",
+  "reliableGroup_throttledBanner": "Traffic limit reached: automatic syncing waits until {time}.",
+  "@reliableGroup_throttledBanner": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  }
 }

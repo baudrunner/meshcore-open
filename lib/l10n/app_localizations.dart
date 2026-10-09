@@ -9531,6 +9531,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Lost: not confirmed by everyone within 12 hours'**
   String get reliableGroup_deliveryLost;
+
+  /// No description provided for @reliableGroup_traffic.
+  ///
+  /// In en, this message translates to:
+  /// **'Radio traffic'**
+  String get reliableGroup_traffic;
+
+  /// No description provided for @reliableGroup_trafficHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Packets this phone sent and received for this group since the app started.'**
+  String get reliableGroup_trafficHint;
+
+  /// No description provided for @reliableGroup_trafficLast10m.
+  ///
+  /// In en, this message translates to:
+  /// **'10 min'**
+  String get reliableGroup_trafficLast10m;
+
+  /// No description provided for @reliableGroup_trafficLast1h.
+  ///
+  /// In en, this message translates to:
+  /// **'1 h'**
+  String get reliableGroup_trafficLast1h;
+
+  /// No description provided for @reliableGroup_trafficLast24h.
+  ///
+  /// In en, this message translates to:
+  /// **'24 h'**
+  String get reliableGroup_trafficLast24h;
+
+  /// No description provided for @reliableGroup_trafficOwn.
+  ///
+  /// In en, this message translates to:
+  /// **'Own messages'**
+  String get reliableGroup_trafficOwn;
+
+  /// No description provided for @reliableGroup_trafficStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmations and queries'**
+  String get reliableGroup_trafficStatus;
+
+  /// No description provided for @reliableGroup_trafficRepair.
+  ///
+  /// In en, this message translates to:
+  /// **'Resent messages'**
+  String get reliableGroup_trafficRepair;
+
+  /// No description provided for @reliableGroup_trafficSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent in total'**
+  String get reliableGroup_trafficSent;
+
+  /// No description provided for @reliableGroup_trafficReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'Received'**
+  String get reliableGroup_trafficReceived;
+
+  /// No description provided for @reliableGroup_trafficAirtime.
+  ///
+  /// In en, this message translates to:
+  /// **'Airtime (at least)'**
+  String get reliableGroup_trafficAirtime;
+
+  /// No description provided for @reliableGroup_trafficDuty.
+  ///
+  /// In en, this message translates to:
+  /// **'Share of the last hour on air: {percent}'**
+  String reliableGroup_trafficDuty(String percent);
+
+  /// No description provided for @reliableGroup_trafficLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic packets in the last hour: {count} of {limit}'**
+  String reliableGroup_trafficLimit(int count, int limit);
+
+  /// No description provided for @reliableGroup_pause.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause syncing'**
+  String get reliableGroup_pause;
+
+  /// No description provided for @reliableGroup_resume.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume syncing'**
+  String get reliableGroup_resume;
+
+  /// No description provided for @reliableGroup_pausedBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic syncing is paused. Your messages are still sent, confirmations and resends are not.'**
+  String get reliableGroup_pausedBanner;
+
+  /// No description provided for @reliableGroup_throttledBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Traffic limit reached: automatic syncing waits until {time}.'**
+  String reliableGroup_throttledBanner(String time);
 }
 
 class _AppLocalizationsDelegate

@@ -36,6 +36,14 @@ With everyone in range, all confirmations arrive within about a minute: each mem
 
 In simulation, 30 messages over six members cost about 160 packets without loss and about 270 with 30 % packet loss; most extra packets are 21-byte status packets. Pick the [region](regions.md) of the group's channel so that floods reach all members and no further.
 
+## Traffic overview, limit and pause
+
+Group menu (⋮) → **Radio traffic** lists the group packets this phone sent and received in the last 10 minutes, hour and 24 hours: own messages, confirmations and queries, resent messages, and the estimated airtime with its share of the last hour. The airtime is a lower bound, because the MeshCore packet header is not counted. The figures start at zero when the app starts.
+
+Each phone sends at most **30 automatic packets per group and hour** (confirmations, queries, resends). When the limit is reached, a banner shows until when automatic syncing waits; own messages are still sent.
+
+Group menu → **Pause syncing** stops all automatic traffic of this phone for the group immediately and survives app restarts. Own messages are still sent and others' packets are still received, but this phone neither confirms nor resends. **Resume syncing** announces the phone to the group, and anything missed is caught up.
+
 ## Limits
 
 - Text up to 135 bytes per message with six members (fewer bytes with more members).

@@ -10,6 +10,7 @@ import 'prefs_manager.dart';
 class ReliableGroupStore {
   static const String _groupsPrefix = 'reliable_groups_';
   static const String _statePrefix = 'reliable_group_state_';
+  static const String _pausedPrefix = 'reliable_group_paused_';
 
   final String _scope;
 
@@ -68,7 +69,22 @@ class ReliableGroupStore {
   Future<void> deleteState(int groupId) async {
     if (!isScoped) return;
     await PrefsManager.instance.remove(_stateKey(groupId));
+    await PrefsManager.instance.remove(_pausedKey(groupId));
+  }
+
+  bool loadPaused(int groupId) =>
+      isScoped && (PrefsManager.instance.getBool(_pausedKey(groupId)) ?? false);
+
+  Future<void> savePaused(int groupId, bool paused) async {
+    if (!isScoped) return;
+    if (paused) {
+      await PrefsManager.instance.setBool(_pausedKey(groupId), true);
+    } else {
+      await PrefsManager.instance.remove(_pausedKey(groupId));
+    }
   }
 
   String _stateKey(int groupId) => '$_statePrefix${_scope}_$groupId';
+
+  String _pausedKey(int groupId) => '$_pausedPrefix${_scope}_$groupId';
 }
