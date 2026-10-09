@@ -43,7 +43,8 @@ jobs:
           sed -i 's/android:label="MeshCore Open"/android:label="MeshCore Gruppen"/' android/app/src/main/AndroidManifest.xml
           grep -q 'com.meshcore.meshcore_open.groups' android/app/build.gradle.kts
       - run: flutter pub get
-      - run: flutter build apk --release --no-pub
+      # Phones only need arm64; the default build adds armv7 and x86_64 too.
+      - run: flutter build apk --release --no-pub --target-platform android-arm64
       - name: Publish pre-release
         env:
           GH_TOKEN: ${{ github.token }}
